@@ -20,6 +20,12 @@ namespace Assets.Scripts
             _playerInput.Player.Shoot.performed += OnShoot;
         }
 
+        private void OnDisable()
+        {
+            _playerInput.Player.Shoot.performed -= OnShoot;
+            _playerInput.Disable();
+        }
+
         private void OnShoot(InputAction.CallbackContext obj)
         {
             GameObject bullet = Instantiate(_bulletPrefab, _bulletSpawnPoint.position, transform.rotation);
