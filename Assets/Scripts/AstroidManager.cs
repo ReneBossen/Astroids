@@ -76,7 +76,6 @@ namespace Assets.Scripts
             else
             {
                 InstantiateExplosionEffects(5);
-                //SpawnExplosion();
             }
         }
 
