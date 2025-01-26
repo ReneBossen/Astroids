@@ -20,12 +20,13 @@ namespace Assets.Scripts
         private void Awake()
         {
             _camera = Camera.main;
+            CalculateScreenBounds();
         }
 
         private void Start()
         {
             _explosionParent = new GameObject("ExplosionParent");
-            InstantiateExplosionEffects(5);
+            InstantiateExplosionEffects(10);
 
             SpawnAstroids(5);
         }
@@ -51,25 +52,36 @@ namespace Assets.Scripts
             }
         }
 
-        private void HandleAstroidHit(object sender, Astroid.OnAstroidHitEventArgs e)
+        private void HandleAstroidHit(object sender, Astroid.OnAstroidHitEventArgs astroid)
         {
-            SpawnExplosion();
+            SpawnExplosion(astroid.Astroid);
+
+            StartCoroutine(DisableAfterTime(astroid.Astroid, 0f));
         }
 
-        private void SpawnExplosion()
+        private void SpawnExplosion(GameObject astroid)
         {
             GameObject explosion = _explosionPrefabs.FirstOrDefault(explosion => !explosion.activeInHierarchy);
 
             if (explosion != null)
             {
+                RepositionExplosion(explosion, astroid.transform.position);
+
                 explosion.SetActive(true);
+                explosion.GetComponent<ParticleSystem>().Play();
+
                 StartCoroutine(DisableAfterTime(explosion, 1f));
             }
             else
             {
                 InstantiateExplosionEffects(5);
-                SpawnExplosion();
+                //SpawnExplosion();
             }
+        }
+
+        private void RepositionExplosion(GameObject explosion, Vector2 position)
+        {
+            explosion.transform.position = position;
         }
 
         private GameObject GetRandomAstroidPrefab()
@@ -82,6 +94,16 @@ namespace Assets.Scripts
             float randomX = Random.Range(-_screenBounds.x / 2, _screenBounds.x / 2);
             float randomY = Random.Range(-_screenBounds.y / 2, _screenBounds.y / 2);
             return new Vector3(randomX, randomY, 0);
+        }
+
+        private void CalculateScreenBounds()
+        {
+            Vector3 screenBottomLeft = _camera.ViewportToWorldPoint(new Vector3(0, 0, 0));
+            Vector3 screenTopRight = _camera.ViewportToWorldPoint(new Vector3(1, 1, 0));
+            _screenBounds = new Vector2(
+                screenTopRight.x - screenBottomLeft.x,
+                screenTopRight.y - screenBottomLeft.y
+            );
         }
 
         private IEnumerator DisableAfterTime(GameObject prefab, float time)

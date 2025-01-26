@@ -394,6 +394,7 @@ MonoBehaviour:
   - {fileID: 5362692286556044953, guid: e07faf16d0f6a79409fef547ebd3eda2, type: 3}
   - {fileID: 4819329562445237144, guid: 75e78f7788f44d04ba632b384e237647, type: 3}
   - {fileID: 2197705870855362780, guid: 2cdb9fd6b2db11d4aaf8306654ee24d4, type: 3}
+  _explosionPrefab: {fileID: 7166671978936448771, guid: eefb599b5bdd8554bb880ecc2b30f466, type: 3}
 --- !u!1001 &6673108005558355640
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -446,6 +447,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 5488722560713759571, guid: efda6c492c198424493c93280daa1b0e, type: 3}
+      propertyPath: m_Constraints
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -457,5 +462,5 @@ SceneRoots:
   m_Roots:
   - {fileID: 519420032}
   - {fileID: 619394802}
-  - {fileID: 6673108005558355640}
   - {fileID: 650290080}
+  - {fileID: 6673108005558355640}

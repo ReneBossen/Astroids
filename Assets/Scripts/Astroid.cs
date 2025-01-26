@@ -10,7 +10,7 @@ namespace Assets.Scripts
 
         public class OnAstroidHitEventArgs : EventArgs
         {
-            public Vector2 Position;
+            public GameObject Astroid;
         }
 
         [SerializeField] private float _speed;
@@ -29,7 +29,7 @@ namespace Assets.Scripts
         {
             OnAstroidHit?.Invoke(this, new OnAstroidHitEventArgs
             {
-                Position = transform.position
+                Astroid = gameObject
             });
         }
     }
