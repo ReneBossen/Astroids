@@ -21,7 +21,7 @@ namespace Assets.Scripts.Helpers
             DontDestroyOnLoad(this);
         }
 
-        public IEnumerator DisableAfterTime(GameObject prefab, float time)
+        public static IEnumerator DisableAfterTime(GameObject prefab, float time)
         {
             yield return new WaitForSeconds(time);
             prefab.SetActive(false);
