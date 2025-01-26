@@ -1,3 +1,4 @@
+using Assets.Scripts.Helpers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,7 +49,7 @@ namespace Assets.Scripts
                 GameObject explosionPrefab = Instantiate(_explosionPrefab, transform.position, Quaternion.identity, _explosionParent.transform);
                 _explosionPrefabs.Add(explosionPrefab);
 
-                StartCoroutine(DisableAfterTime(explosionPrefab, 0f));
+                StartCoroutine(GameObjectHandler.Instance.DisableAfterTime(explosionPrefab, 0f));
             }
         }
 
@@ -56,7 +57,7 @@ namespace Assets.Scripts
         {
             SpawnExplosion(astroid.Astroid);
 
-            StartCoroutine(DisableAfterTime(astroid.Astroid, 0f));
+            StartCoroutine(GameObjectHandler.Instance.DisableAfterTime(astroid.Astroid, 0f));
         }
 
         private void SpawnExplosion(GameObject astroid)
@@ -70,7 +71,7 @@ namespace Assets.Scripts
                 explosion.SetActive(true);
                 explosion.GetComponent<ParticleSystem>().Play();
 
-                StartCoroutine(DisableAfterTime(explosion, 1f));
+                StartCoroutine(GameObjectHandler.Instance.DisableAfterTime(explosion, 1f));
             }
             else
             {
@@ -104,12 +105,6 @@ namespace Assets.Scripts
                 screenTopRight.x - screenBottomLeft.x,
                 screenTopRight.y - screenBottomLeft.y
             );
-        }
-
-        private IEnumerator DisableAfterTime(GameObject prefab, float time)
-        {
-            yield return new WaitForSeconds(time);
-            prefab.SetActive(false);
         }
     }
 }
