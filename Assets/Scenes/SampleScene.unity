@@ -497,7 +497,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8400026305323939049, guid: efda6c492c198424493c93280daa1b0e, type: 3}
       propertyPath: _lifeTimer
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

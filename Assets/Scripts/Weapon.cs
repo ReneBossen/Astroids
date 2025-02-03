@@ -13,6 +13,7 @@ namespace Assets.Scripts
         [SerializeField] private float _lifeTimer;
 
         private readonly List<GameObject> _spawnedBulletPrefabs = new();
+        private readonly Dictionary<GameObject, Coroutine> _activeCoroutines = new();
 
         private PlayerInput _playerInput;
         private GameObject _bulletPool;
@@ -25,7 +26,7 @@ namespace Assets.Scripts
         private void Start()
         {
             _bulletPool = new GameObject("BulletPool");
-            InstantiateExplosionEffects(30);
+            InstantiateBulletPrefabs(30);
         }
 
         private void OnEnable()
@@ -40,9 +41,10 @@ namespace Assets.Scripts
             _playerInput.Disable();
         }
 
+        //TODO: Fix bullets disappearing to early if they hit an astroid, and get activated again
         private void OnShoot(InputAction.CallbackContext obj)
         {
-            GameObject bullet = _spawnedBulletPrefabs.FirstOrDefault(explosion => !explosion.activeInHierarchy);
+            GameObject bullet = _spawnedBulletPrefabs.FirstOrDefault(bullet => !bullet.activeInHierarchy);
 
             if (bullet == null)
                 return;
@@ -50,17 +52,37 @@ namespace Assets.Scripts
             GameObjectHandler.RepositionGameObject(bullet, _bulletSpawnPoint.transform.position);
             bullet.transform.rotation = transform.rotation;
 
-            //TODO: Fix bullets disappearing to early if they hit an astroid, and get activated again
-
             bullet.SetActive(true);
 
-            StartCoroutine(GameObjectHandler.DisableAfterTime(bullet, _lifeTimer));
+            if (_activeCoroutines.TryGetValue(bullet, out Coroutine oldCoroutine)
+                && oldCoroutine != null)
+            {
+                StopCoroutine(oldCoroutine);
+            }
+
+            Coroutine newCoroutine = StartCoroutine(GameObjectHandler.DisableAfterTime(bullet, _lifeTimer));
+            _activeCoroutines[bullet] = newCoroutine;
         }
 
-        private async void InstantiateExplosionEffects(int amount)
+        private void OnBulletHit(object sender, Bullet.BulletHitEventArgs args)
+        {
+            GameObject bullet = args.Bullet;
+            if (_activeCoroutines.TryGetValue(bullet, out Coroutine coroutine)
+                && coroutine != null)
+            {
+                StopCoroutine(coroutine);
+                _activeCoroutines.Remove(bullet);
+            }
+
+            bullet.SetActive(false);
+        }
+
+        private async void InstantiateBulletPrefabs(int amount)
         {
             _spawnedBulletPrefabs.AddRange(
                 await ObjectPoolHandler.Instance.InstantiateObjectPool(_bulletPrefab, _bulletPool, amount));
+
+            _spawnedBulletPrefabs.ForEach(bullet => bullet.GetComponent<Bullet>().OnBulletHit += OnBulletHit);
         }
     }
 }
