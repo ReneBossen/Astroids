@@ -16,7 +16,7 @@ namespace Assets.Scripts
 
         private Camera _camera;
         private Vector2 _screenBounds;
-        private GameObject _explosionParent;
+        private GameObject _explosionPool;
 
         private void Awake()
         {
@@ -26,7 +26,7 @@ namespace Assets.Scripts
 
         private void Start()
         {
-            _explosionParent = new GameObject("ExplosionParent");
+            _explosionPool = new GameObject("ExplosionPool");
             InstantiateExplosionEffects(10);
 
             SpawnAstroids(5);
@@ -42,15 +42,10 @@ namespace Assets.Scripts
             }
         }
 
-        private void InstantiateExplosionEffects(int amount)
+        private async void InstantiateExplosionEffects(int amount)
         {
-            for (int i = 0; i < amount; i++)
-            {
-                GameObject explosionPrefab = Instantiate(_explosionPrefab, transform.position, Quaternion.identity, _explosionParent.transform);
-                _explosionPrefabs.Add(explosionPrefab);
-
-                StartCoroutine(GameObjectHandler.DisableAfterTime(explosionPrefab, 0f));
-            }
+            _explosionPrefabs.AddRange(
+                await ObjectPoolHandler.Instance.InstantiateObjectPool(_explosionPrefab, _explosionPool, amount));
         }
 
         private void HandleAstroidHit(object sender, Astroid.OnAstroidHitEventArgs astroid)
@@ -64,24 +59,15 @@ namespace Assets.Scripts
         {
             GameObject explosion = _explosionPrefabs.FirstOrDefault(explosion => !explosion.activeInHierarchy);
 
-            if (explosion != null)
-            {
-                RepositionExplosion(explosion, astroid.transform.position);
+            if (explosion == null)
+                return;
 
-                explosion.SetActive(true);
-                explosion.GetComponent<ParticleSystem>().Play();
+            GameObjectHandler.RepositionGameObject(explosion, astroid.transform.position);
 
-                StartCoroutine(GameObjectHandler.DisableAfterTime(explosion, 1f));
-            }
-            else
-            {
-                InstantiateExplosionEffects(5);
-            }
-        }
+            explosion.SetActive(true);
+            explosion.GetComponent<ParticleSystem>().Play();
 
-        private void RepositionExplosion(GameObject explosion, Vector2 position)
-        {
-            explosion.transform.position = position;
+            StartCoroutine(GameObjectHandler.DisableAfterTime(explosion, 1f));
         }
 
         private GameObject GetRandomAstroidPrefab()
