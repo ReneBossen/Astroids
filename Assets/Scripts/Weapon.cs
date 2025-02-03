@@ -10,8 +10,10 @@ namespace Assets.Scripts
     {
         [SerializeField] private GameObject _bulletPrefab;
         [SerializeField] private Transform _bulletSpawnPoint;
+        [SerializeField] private float _lifeTimer;
 
-        private List<GameObject> _spawnedBulletPrefabs = new();
+        private readonly List<GameObject> _spawnedBulletPrefabs = new();
+
         private PlayerInput _playerInput;
         private GameObject _bulletPool;
 
@@ -46,12 +48,13 @@ namespace Assets.Scripts
                 return;
 
             GameObjectHandler.RepositionGameObject(bullet, _bulletSpawnPoint.transform.position);
+            bullet.transform.rotation = transform.rotation;
 
             //TODO: Fix bullets disappearing to early if they hit an astroid, and get activated again
 
             bullet.SetActive(true);
 
-            StartCoroutine(GameObjectHandler.DisableAfterTime(bullet, 1f));
+            StartCoroutine(GameObjectHandler.DisableAfterTime(bullet, _lifeTimer));
         }
 
         private async void InstantiateExplosionEffects(int amount)
