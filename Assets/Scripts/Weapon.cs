@@ -47,7 +47,7 @@ namespace Assets.Scripts
 
             GameObjectHandler.RepositionGameObject(bullet, _bulletSpawnPoint.transform.position);
 
-            //TODO: Fix bullets disappering to early if they hit an astroid, and get activated again
+            //TODO: Fix bullets disappearing to early if they hit an astroid, and get activated again
 
             bullet.SetActive(true);
 
