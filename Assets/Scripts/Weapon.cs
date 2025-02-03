@@ -41,7 +41,6 @@ namespace Assets.Scripts
             _playerInput.Disable();
         }
 
-        //TODO: Fix bullets disappearing to early if they hit an astroid, and get activated again
         private void OnShoot(InputAction.CallbackContext obj)
         {
             GameObject bullet = _spawnedBulletPrefabs.FirstOrDefault(bullet => !bullet.activeInHierarchy);
