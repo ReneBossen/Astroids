@@ -24,6 +24,11 @@ namespace Assets.Scripts.Helpers
             return await CreateObjectPool(prefab, parent, amount);
         }
 
+        public async Task<List<GameObject>> InstantiateRandomObjectPoolByList(List<GameObject> prefabs, GameObject parent, int amount)
+        {
+            return await CreateRandomObjectPoolByList(prefabs, parent, amount);
+        }
+
         private async Task<List<GameObject>> CreateObjectPool(GameObject prefab, GameObject parent, int amount)
         {
             List<GameObject> spawnedPrefabs = new();
@@ -32,6 +37,25 @@ namespace Assets.Scripts.Helpers
             for (int i = 0; i < amount; i++)
             {
                 GameObject tempPrefab = Instantiate(prefab, spawnPosition, Quaternion.identity, parent.transform);
+                spawnedPrefabs.Add(tempPrefab);
+
+                StartCoroutine(GameObjectHandler.DisableAfterTime(tempPrefab, 0f));
+
+                await Task.Yield();
+            }
+
+            return spawnedPrefabs;
+        }
+
+        private async Task<List<GameObject>> CreateRandomObjectPoolByList(List<GameObject> prefabs, GameObject parent, int amount)
+        {
+            List<GameObject> spawnedPrefabs = new();
+            Vector2 spawnPosition = new(50, 50);
+
+            for (int i = 0; i < amount; i++)
+            {
+                GameObject randomPrefab = prefabs[Random.Range(0, prefabs.Count)];
+                GameObject tempPrefab = Instantiate(randomPrefab, spawnPosition, Quaternion.identity, parent.transform);
                 spawnedPrefabs.Add(tempPrefab);
 
                 StartCoroutine(GameObjectHandler.DisableAfterTime(tempPrefab, 0f));

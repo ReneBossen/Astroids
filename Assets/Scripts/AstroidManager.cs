@@ -49,7 +49,7 @@ namespace Assets.Scripts
         private async Task InstantiateAstroids(int amount)
         {
             _instantiatedAstroids.AddRange(
-                await ObjectPoolHandler.Instance.InstantiateObjectPool(GetRandomAstroidPrefab(), _astroidPool, amount));
+                await ObjectPoolHandler.Instance.InstantiateRandomObjectPoolByList(_astroidPrefabs, _astroidPool, amount));
         }
 
         public async void SpawnAstroids(int amount)
@@ -66,7 +66,7 @@ namespace Assets.Scripts
         {
             for (int i = 0; i < amount; i++)
             {
-                GameObject astroid = _instantiatedAstroids.OrderBy(astroid => Random.value).FirstOrDefault(astroid => !astroid.activeInHierarchy);
+                GameObject astroid = _instantiatedAstroids.OrderBy(astroid => Random.Range(0, _instantiatedAstroids.Count)).FirstOrDefault(astroid => !astroid.activeInHierarchy);
 
                 if (astroid == null)
                 {
