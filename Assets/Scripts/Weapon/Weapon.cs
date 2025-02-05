@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using PlayerInput = Assets.Scripts.Player.PlayerInput;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Weapon
 {
     public class Weapon : MonoBehaviour
     {

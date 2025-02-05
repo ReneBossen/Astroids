@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Weapon
 {
     public class Bullet : MonoBehaviour
     {

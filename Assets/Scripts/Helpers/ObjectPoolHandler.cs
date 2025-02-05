@@ -27,10 +27,11 @@ namespace Assets.Scripts.Helpers
         private async Task<List<GameObject>> CreateObjectPool(GameObject prefab, GameObject parent, int amount)
         {
             List<GameObject> spawnedPrefabs = new();
+            Vector2 spawnPosition = new(50, 50);
 
             for (int i = 0; i < amount; i++)
             {
-                GameObject tempPrefab = Instantiate(prefab, transform.position, Quaternion.identity, parent.transform);
+                GameObject tempPrefab = Instantiate(prefab, spawnPosition, Quaternion.identity, parent.transform);
                 spawnedPrefabs.Add(tempPrefab);
 
                 StartCoroutine(GameObjectHandler.DisableAfterTime(tempPrefab, 0f));

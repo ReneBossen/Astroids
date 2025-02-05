@@ -27,6 +27,7 @@ namespace Assets.Scripts
 
         private void OnCollisionEnter2D(Collision2D collider)
         {
+            Debug.Log($"Astroid collided with {collider.gameObject}");
             OnAstroidHit?.Invoke(this, new OnAstroidHitEventArgs
             {
                 Astroid = gameObject

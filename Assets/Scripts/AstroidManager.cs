@@ -2,24 +2,37 @@ using Assets.Scripts.Helpers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Assets.Scripts
 {
     public class AstroidManager : MonoBehaviour
     {
+        public static AstroidManager Instance { get; private set; }
+
         [SerializeField] private List<GameObject> _astroidPrefabs;
         [SerializeField] private GameObject _explosionPrefab;
 
+        private readonly List<GameObject> _instantiatedAstroids = new();
         private readonly List<GameObject> _spawnedAstroids = new();
         private readonly List<GameObject> _explosionPrefabs = new();
 
         private Camera _camera;
         private Vector2 _screenBounds;
         private GameObject _explosionPool;
+        private GameObject _astroidPool;
 
         private void Awake()
         {
+            if (Instance != null)
+            {
+                Destroy(gameObject);
+            }
+
+            Instance = this;
+
             _camera = Camera.main;
             CalculateScreenBounds();
         }
@@ -27,18 +40,46 @@ namespace Assets.Scripts
         private void Start()
         {
             _explosionPool = new GameObject("ExplosionPool");
+            _astroidPool = new GameObject("AstroidPool");
             InstantiateExplosionEffects(10);
 
-            SpawnAstroids(5);
+            _ = InstantiateAstroids(30);
         }
 
-        private void SpawnAstroids(int amount)
+        private async Task InstantiateAstroids(int amount)
+        {
+            _instantiatedAstroids.AddRange(
+                await ObjectPoolHandler.Instance.InstantiateObjectPool(GetRandomAstroidPrefab(), _astroidPool, amount));
+        }
+
+        public async void SpawnAstroids(int amount)
+        {
+            if (amount > _instantiatedAstroids.Count)
+            {
+                await InstantiateAstroids(Mathf.Abs(amount - _instantiatedAstroids.Count));
+            }
+
+            PlaceAstroids(amount);
+        }
+
+        private void PlaceAstroids(int amount)
         {
             for (int i = 0; i < amount; i++)
             {
-                GameObject spawnedAstroid = Instantiate(GetRandomAstroidPrefab(), GetRandomSpawnPosition(), Quaternion.identity);
-                _spawnedAstroids.Add(spawnedAstroid);
-                spawnedAstroid.GetComponent<Astroid>().OnAstroidHit += HandleAstroidHit;
+                GameObject astroid = _instantiatedAstroids.OrderBy(astroid => Random.value).FirstOrDefault(astroid => !astroid.activeInHierarchy);
+
+                if (astroid == null)
+                {
+                    return;
+                }
+
+                astroid.transform.position = GetRandomSpawnPosition();
+                astroid.transform.rotation = Quaternion.identity;
+                _spawnedAstroids.Add(astroid);
+
+                astroid.SetActive(true);
+
+                astroid.GetComponent<Astroid>().OnAstroidHit += HandleAstroidHit;
             }
         }
 
@@ -51,6 +92,12 @@ namespace Assets.Scripts
         private void HandleAstroidHit(object sender, Astroid.OnAstroidHitEventArgs astroid)
         {
             SpawnExplosion(astroid.Astroid);
+
+            LevelManager.Instance.AsteroidDestroyed();
+
+            astroid.Astroid.GetComponent<Astroid>().OnAstroidHit -= HandleAstroidHit;
+
+            _spawnedAstroids.Remove(astroid.Astroid);
 
             StartCoroutine(GameObjectHandler.DisableAfterTime(astroid.Astroid, 0f));
         }

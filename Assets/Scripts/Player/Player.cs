@@ -1,12 +1,11 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Player
 {
     public class Player : MonoBehaviour
     {
         private PlayerInput _playerInput;
-        private Weapon _weapon;
+        private Weapon.Weapon _weapon;
         private PlayerMovement _playerMovement;
 
         private void Awake()
@@ -16,7 +15,7 @@ namespace Assets.Scripts
 
         private void Start()
         {
-            _weapon = GetComponent<Weapon>();
+            _weapon = GetComponent<Weapon.Weapon>();
             _playerMovement = GetComponent<PlayerMovement>();
         }
     }
