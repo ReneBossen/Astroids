@@ -1,16 +1,25 @@
 using Assets.Scripts.Helpers;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Assets.Scripts
 {
     public class AstroidManager : MonoBehaviour
     {
         public static AstroidManager Instance { get; private set; }
+
+        public event EventHandler<OnAstroidDestroyedEventArgs> OnAstroidDestroyed;
+
+        public class OnAstroidDestroyedEventArgs : EventArgs
+        {
+            public int score;
+        }
 
         [SerializeField] private List<GameObject> _astroidPrefabs;
         [SerializeField] private GameObject _explosionPrefab;
@@ -74,7 +83,6 @@ namespace Assets.Scripts
                 }
 
                 astroid.transform.position = GetRandomSpawnPosition();
-                astroid.transform.rotation = Quaternion.identity;
                 _spawnedAstroids.Add(astroid);
 
                 astroid.SetActive(true);
@@ -94,6 +102,12 @@ namespace Assets.Scripts
             SpawnExplosion(astroid.Astroid);
 
             LevelManager.Instance.AsteroidDestroyed();
+
+
+            OnAstroidDestroyed?.Invoke(this, new OnAstroidDestroyedEventArgs
+            {
+                score = astroid.Value
+            });
 
             astroid.Astroid.GetComponent<Astroid>().OnAstroidHit -= HandleAstroidHit;
 

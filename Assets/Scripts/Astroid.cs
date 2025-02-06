@@ -11,9 +11,11 @@ namespace Assets.Scripts
         public class OnAstroidHitEventArgs : EventArgs
         {
             public GameObject Astroid;
+            public int Value;
         }
 
         [SerializeField] private float _speed;
+        [SerializeField] private int _scoreValue;
 
         private void OnEnable()
         {
@@ -29,7 +31,8 @@ namespace Assets.Scripts
         {
             OnAstroidHit?.Invoke(this, new OnAstroidHitEventArgs
             {
-                Astroid = gameObject
+                Astroid = gameObject,
+                Value = _scoreValue
             });
         }
     }
