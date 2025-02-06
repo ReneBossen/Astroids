@@ -1,5 +1,4 @@
 using Assets.Scripts.UI;
-using TMPro;
 using UnityEngine;
 
 namespace Assets.Scripts
