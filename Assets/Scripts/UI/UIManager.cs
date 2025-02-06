@@ -1,4 +1,3 @@
-using Assets.Scripts.Score;
 using UnityEngine;
 
 namespace Assets.Scripts.UI
@@ -6,9 +5,6 @@ namespace Assets.Scripts.UI
     public class UIManager : MonoBehaviour
     {
         public static UIManager Instance { get; private set; }
-
-        [SerializeField] private StartGameManager _startGameManager;
-        [SerializeField] private ScoreManager _scoreManager;
 
         private void Awake()
         {
@@ -22,7 +18,8 @@ namespace Assets.Scripts.UI
 
         public void ShowScoreUI()
         {
-            _scoreManager.Show();
+            ScoreUIManager.Instance.Show();
+            HealthUIManager.Instance.Show();
         }
     }
 }

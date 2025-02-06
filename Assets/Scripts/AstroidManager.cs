@@ -14,6 +14,7 @@ namespace Assets.Scripts
     {
         public static AstroidManager Instance { get; private set; }
 
+        public event EventHandler OnPlayerHitByAstroid;
         public event EventHandler<OnAstroidDestroyedEventArgs> OnAstroidDestroyed;
 
         public class OnAstroidDestroyedEventArgs : EventArgs
@@ -87,8 +88,14 @@ namespace Assets.Scripts
 
                 astroid.SetActive(true);
 
-                astroid.GetComponent<Astroid>().OnAstroidHit += HandleAstroidHit;
+                astroid.GetComponent<Astroid>().OnAstroidHit += Astroid_HandleAstroidHit;
+                astroid.GetComponent<Astroid>().OnPlayerHit += Astroid_HandleAstroidHitPlayer;
             }
+        }
+
+        private void Astroid_HandleAstroidHitPlayer(object sender, EventArgs e)
+        {
+            OnPlayerHitByAstroid?.Invoke(this, EventArgs.Empty);
         }
 
         private async void InstantiateExplosionEffects(int amount)
@@ -97,7 +104,7 @@ namespace Assets.Scripts
                 await ObjectPoolHandler.Instance.InstantiateObjectPool(_explosionPrefab, _explosionPool, amount));
         }
 
-        private void HandleAstroidHit(object sender, Astroid.OnAstroidHitEventArgs astroid)
+        private void Astroid_HandleAstroidHit(object sender, Astroid.OnAstroidHitEventArgs astroid)
         {
             SpawnExplosion(astroid.Astroid);
 
@@ -109,7 +116,8 @@ namespace Assets.Scripts
                 score = astroid.Value
             });
 
-            astroid.Astroid.GetComponent<Astroid>().OnAstroidHit -= HandleAstroidHit;
+            astroid.Astroid.GetComponent<Astroid>().OnAstroidHit -= Astroid_HandleAstroidHit;
+            astroid.Astroid.GetComponent<Astroid>().OnPlayerHit -= Astroid_HandleAstroidHitPlayer;
 
             _spawnedAstroids.Remove(astroid.Astroid);
 

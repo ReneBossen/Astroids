@@ -7,6 +7,7 @@ namespace Assets.Scripts
     public class Astroid : MonoBehaviour
     {
         public event EventHandler<OnAstroidHitEventArgs> OnAstroidHit;
+        public event EventHandler OnPlayerHit;
 
         public class OnAstroidHitEventArgs : EventArgs
         {
@@ -29,6 +30,11 @@ namespace Assets.Scripts
 
         private void OnCollisionEnter2D(Collision2D collider)
         {
+            if (collider.gameObject.GetComponent<Player.Player>() != null)
+            {
+                OnPlayerHit?.Invoke(this, EventArgs.Empty);
+            }
+
             OnAstroidHit?.Invoke(this, new OnAstroidHitEventArgs
             {
                 Astroid = gameObject,
