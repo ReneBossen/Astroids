@@ -20,22 +20,32 @@ namespace Assets.Scripts.Player
 
         private void OnEnable()
         {
-            _playerInput.Enable();
-            _playerInput.Player.Move.performed += OnMove;
-            _playerInput.Player.Move.canceled += OnMoveCanceled;
+            EnableMovement();
         }
 
         private void OnDisable()
         {
-            _playerInput.Player.Move.performed -= OnMove;
-            _playerInput.Player.Move.canceled -= OnMoveCanceled;
-            _playerInput.Disable();
+            DisableMovement();
         }
 
         private void FixedUpdate()
         {
             ApplyThrust(_Input.y);
             ApplyRotation(_Input.x);
+        }
+
+        public void DisableMovement()
+        {
+            _playerInput.Player.Move.performed -= OnMove;
+            _playerInput.Player.Move.canceled -= OnMoveCanceled;
+            _playerInput.Disable();
+        }
+
+        public void EnableMovement()
+        {
+            _playerInput.Enable();
+            _playerInput.Player.Move.performed += OnMove;
+            _playerInput.Player.Move.canceled += OnMoveCanceled;
         }
 
         private void ApplyRotation(float rotation)

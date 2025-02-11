@@ -52,6 +52,21 @@ namespace Assets.Scripts
             InstantiateExplosionEffects(10);
 
             _ = InstantiateAstroids(30);
+
+            LevelManager.Instance.OnLevelStarted += LevelManager_OnLevelStarted;
+            GameManager.Instance.OnGameOver += GameManager_OnGameOver;
+        }
+
+        private void GameManager_OnGameOver(object sender, EventArgs e)
+        {
+            DestroyAllRemainingAstroids();
+        }
+
+        private void LevelManager_OnLevelStarted(object sender, LevelManager.OnLevelStartedEventArgs args)
+        {
+            int astroidsToSpawn = args.AstroidsRemaining;
+
+            SpawnAstroids(astroidsToSpawn);
         }
 
         private async Task InstantiateAstroids(int amount)
@@ -91,15 +106,15 @@ namespace Assets.Scripts
             }
         }
 
-        private void Astroid_HandleAstroidHitPlayer(object sender, EventArgs e)
-        {
-            OnPlayerHitByAstroid?.Invoke(this, EventArgs.Empty);
-        }
-
         private async void InstantiateExplosionEffects(int amount)
         {
             _explosionPrefabs.AddRange(
                 await ObjectPoolHandler.Instance.InstantiateObjectPool(_explosionPrefab, _explosionPool, amount));
+        }
+
+        private void Astroid_HandleAstroidHitPlayer(object sender, EventArgs e)
+        {
+            OnPlayerHitByAstroid?.Invoke(this, EventArgs.Empty);
         }
 
         private void Astroid_HandleAstroidHit(object sender, Astroid.OnAstroidHitEventArgs astroid)
@@ -122,6 +137,16 @@ namespace Assets.Scripts
             StartCoroutine(GameObjectHandler.DisableAfterTime(astroid.Astroid, 0f));
         }
 
+        private void DestroyAllRemainingAstroids()
+        {
+            _spawnedAstroids.ForEach(astroid =>
+            {
+                astroid.GetComponent<Astroid>().OnAstroidHit -= Astroid_HandleAstroidHit;
+                astroid.GetComponent<Astroid>().OnPlayerHit -= Astroid_HandleAstroidHitPlayer;
+                StartCoroutine(GameObjectHandler.DisableAfterTime(astroid, 0f));
+            });
+        }
+
         private void SpawnExplosion(GameObject astroid)
         {
             GameObject explosion = _explosionPrefabs.FirstOrDefault(explosion => !explosion.activeInHierarchy);
@@ -135,11 +160,6 @@ namespace Assets.Scripts
             explosion.GetComponent<ParticleSystem>().Play();
 
             StartCoroutine(GameObjectHandler.DisableAfterTime(explosion, 1f));
-        }
-
-        private GameObject GetRandomAstroidPrefab()
-        {
-            return _astroidPrefabs[Random.Range(0, _astroidPrefabs.Count)];
         }
 
         private Vector3 GetRandomSpawnPosition()

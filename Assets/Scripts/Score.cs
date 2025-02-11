@@ -13,6 +13,12 @@ namespace Assets.Scripts
             ScoreUIManager.Instance.UpdateScoreText(_score);
 
             AstroidManager.Instance.OnAstroidDestroyed += AstroidManager_OnAstroidDestroyed;
+            GameManager.Instance.OnRestartGame += GameManager_OnRestartGame;
+        }
+
+        private void GameManager_OnRestartGame(object sender, System.EventArgs e)
+        {
+            ResetScore();
         }
 
         private void AstroidManager_OnAstroidDestroyed(object sender, AstroidManager.OnAstroidDestroyedEventArgs e)
@@ -23,7 +29,12 @@ namespace Assets.Scripts
         private void AddScore(int amount)
         {
             _score += amount;
+            ScoreUIManager.Instance.UpdateScoreText(_score);
+        }
 
+        private void ResetScore()
+        {
+            _score = 0;
             ScoreUIManager.Instance.UpdateScoreText(_score);
         }
     }

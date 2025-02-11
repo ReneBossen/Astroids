@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace Assets.Scripts.UI
 {
-    public class HealthUIManager : MonoBehaviour
+    public class HealthUIManager : UIManagerBaseClass
     {
         public static HealthUIManager Instance { get; private set; }
 
@@ -23,11 +23,20 @@ namespace Assets.Scripts.UI
         private void Start()
         {
             Health.Instance.OnPlayerTakeDamage += Health_OnPlayerTakeDamage;
+            Health.Instance.OnRetartGame += Health_OnRetartGame;
+        }
 
-            Hide();
+        private void Health_OnRetartGame(object sender, EventArgs e)
+        {
+            UpdateHealthUI();
         }
 
         private void Health_OnPlayerTakeDamage(object sender, EventArgs e)
+        {
+            UpdateHealthUI();
+        }
+
+        private void UpdateHealthUI()
         {
             int currentHealth = Health.Instance.CurrentHealth;
 
@@ -35,16 +44,6 @@ namespace Assets.Scripts.UI
             {
                 _healthImages[i].enabled = i < currentHealth;
             }
-        }
-
-        public void Show()
-        {
-            gameObject.SetActive(true);
-        }
-
-        public void Hide()
-        {
-            gameObject.SetActive(false);
         }
     }
 }
