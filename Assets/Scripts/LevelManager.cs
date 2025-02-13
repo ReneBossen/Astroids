@@ -1,4 +1,6 @@
 using Assets.Scripts;
+using Assets.Scripts.UI;
+using System;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
@@ -6,11 +8,16 @@ public class LevelManager : MonoBehaviour
     public static LevelManager Instance { get; private set; }
 
     public int CurrentLevel { get; private set; } = 0;
+
     private int _astroidsToSpawn;
     private int _astroidsRemaining;
 
-    public delegate void LevelStarted(int level);
-    public static event LevelStarted OnLevelStarted;
+    public event EventHandler<OnLevelStartedEventArgs> OnLevelStarted;
+    public class OnLevelStartedEventArgs : EventArgs
+    {
+        public int Level;
+        public int AstroidsRemaining;
+    }
 
     private void Awake()
     {
@@ -23,7 +30,23 @@ public class LevelManager : MonoBehaviour
         _astroidsToSpawn = 2;
     }
 
-    public void StartGame()
+    private void Start()
+    {
+        GameManager.Instance.OnStartGame += GameManager_OnStartGame;
+        GameManager.Instance.OnRestartGame += GameManager_OnRestartGame;
+    }
+
+    private void GameManager_OnStartGame(object sender, EventArgs e)
+    {
+        StartGame();
+    }
+
+    private void GameManager_OnRestartGame(object sender, EventArgs e)
+    {
+        StartGame();
+    }
+
+    private void StartGame()
     {
         CurrentLevel = 1;
         StartLevel();
@@ -32,9 +55,13 @@ public class LevelManager : MonoBehaviour
     private void StartLevel()
     {
         _astroidsRemaining = _astroidsToSpawn * CurrentLevel;
-        AstroidManager.Instance.SpawnAstroids(_astroidsRemaining);
-        OnLevelStarted?.Invoke(CurrentLevel);
+        OnLevelStarted?.Invoke(this, new OnLevelStartedEventArgs
+        {
+            Level = CurrentLevel,
+            AstroidsRemaining = _astroidsRemaining
+        });
     }
+
 
     public void AsteroidDestroyed()
     {

@@ -1,3 +1,4 @@
+using Assets.Scripts.UI;
 using System;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ namespace Assets.Scripts
 
         public event EventHandler OnPlayerDeath;
         public event EventHandler OnPlayerTakeDamage;
+        public event EventHandler OnRetartGame;
         public int CurrentHealth { get; private set; }
 
         private int _maxHealth;
@@ -28,11 +30,23 @@ namespace Assets.Scripts
         private void Start()
         {
             AstroidManager.Instance.OnPlayerHitByAstroid += AstroidManager_OnPlayerHitByAstroid;
+            GameOverUIManager.Instance.OnRestartGame += GameOverUIManager_OnRestartGame;
+        }
+
+        private void GameOverUIManager_OnRestartGame(object sender, EventArgs e)
+        {
+            RestartGame();
+            OnRetartGame?.Invoke(this, EventArgs.Empty);
         }
 
         private void AstroidManager_OnPlayerHitByAstroid(object sender, EventArgs e)
         {
             TakeDamage();
+        }
+
+        private void RestartGame()
+        {
+            CurrentHealth = _maxHealth;
         }
 
         private void TakeDamage()

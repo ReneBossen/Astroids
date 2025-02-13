@@ -32,7 +32,7 @@ namespace Assets.Scripts.Helpers
         private async Task<List<GameObject>> CreateObjectPool(GameObject prefab, GameObject parent, int amount)
         {
             List<GameObject> spawnedPrefabs = new();
-            Vector2 spawnPosition = new(50, 50);
+            Vector2 spawnPosition = new(100, 100);
 
             for (int i = 0; i < amount; i++)
             {

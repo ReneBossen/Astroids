@@ -5,14 +5,31 @@ namespace Assets.Scripts
 {
     public class Score : MonoBehaviour
     {
-        private int _score;
+        public static Score Instance { get; private set; }
+
+        public int CurrentScore { get; private set; }
+
+        private void Awake()
+        {
+            if (Instance != null)
+            {
+                Destroy(gameObject);
+            }
+            Instance = this;
+        }
 
         private void Start()
         {
-            _score = 0;
-            ScoreUIManager.Instance.UpdateScoreText(_score);
+            CurrentScore = 0;
+            ScoreUIManager.Instance.UpdateScoreText(CurrentScore);
 
             AstroidManager.Instance.OnAstroidDestroyed += AstroidManager_OnAstroidDestroyed;
+            GameManager.Instance.OnRestartGame += GameManager_OnRestartGame;
+        }
+
+        private void GameManager_OnRestartGame(object sender, System.EventArgs e)
+        {
+            ResetScore();
         }
 
         private void AstroidManager_OnAstroidDestroyed(object sender, AstroidManager.OnAstroidDestroyedEventArgs e)
@@ -22,9 +39,14 @@ namespace Assets.Scripts
 
         private void AddScore(int amount)
         {
-            _score += amount;
+            CurrentScore += amount;
+            ScoreUIManager.Instance.UpdateScoreText(CurrentScore);
+        }
 
-            ScoreUIManager.Instance.UpdateScoreText(_score);
+        private void ResetScore()
+        {
+            CurrentScore = 0;
+            ScoreUIManager.Instance.UpdateScoreText(CurrentScore);
         }
     }
 }
