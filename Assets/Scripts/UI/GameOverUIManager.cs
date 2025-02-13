@@ -33,10 +33,14 @@ namespace Assets.Scripts.UI
 
             GameManager.Instance.OnGameOver += GameManager_OnGameOver;
         }
-        //TODO: GameOver Score and HighScore
         private void GameManager_OnGameOver(object sender, EventArgs e)
         {
-            //_score =
+            SetGameOverScore();
+        }
+
+        private void SetGameOverScore()
+        {
+            _score.text = $"Score: {Score.Instance.CurrentScore}";
         }
     }
 }
