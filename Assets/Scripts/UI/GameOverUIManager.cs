@@ -1,3 +1,4 @@
+using Assets.Scripts.Database;
 using System;
 using TMPro;
 using UnityEngine;
@@ -40,7 +41,10 @@ namespace Assets.Scripts.UI
 
         private void SetGameOverScore()
         {
+            LocalSave.TrySaveHighscore(Score.Instance.CurrentScore);
+
             _score.text = $"Score: {Score.Instance.CurrentScore}";
+            _highscore.text = $"Highscore: {LocalSave.GetHighscore()}";
         }
     }
 }
