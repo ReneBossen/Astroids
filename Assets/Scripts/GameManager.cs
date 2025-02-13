@@ -1,5 +1,6 @@
 using Assets.Scripts.UI;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts
@@ -13,6 +14,10 @@ namespace Assets.Scripts
         public event EventHandler OnGameOver;
 
         public bool GameIsRunning { get; private set; } = false;
+
+        [SerializeField] private GameObject _playerPrefab;
+
+        private GameObject _player;
 
 
         private void Awake()
@@ -48,6 +53,7 @@ namespace Assets.Scripts
 
         private void StartGame()
         {
+            SpawnPlayer();
             OnStartGame?.Invoke(this, EventArgs.Empty);
             GameIsRunning = true;
         }
@@ -62,6 +68,17 @@ namespace Assets.Scripts
         {
             OnGameOver?.Invoke(this, EventArgs.Empty);
             GameIsRunning = false;
+        }
+
+        private void SpawnPlayer()
+        {
+            GameObject player = Instantiate(_playerPrefab, Vector3.zero, Quaternion.identity);
+            _player = player;
+        }
+
+        public GameObject GetActivePlayer()
+        {
+            return _player;
         }
     }
 }

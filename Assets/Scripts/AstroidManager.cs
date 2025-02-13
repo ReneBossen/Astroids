@@ -1,8 +1,10 @@
 using Assets.Scripts.Helpers;
+using Assets.Scripts.Player;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -164,9 +166,25 @@ namespace Assets.Scripts
 
         private Vector3 GetRandomSpawnPosition()
         {
+            GameObject player = GameManager.Instance.GetActivePlayer();
+            const int spawnDistanceFromPlayer = 1;
+
             float randomX = Random.Range(-_screenBounds.x / 2, _screenBounds.x / 2);
             float randomY = Random.Range(-_screenBounds.y / 2, _screenBounds.y / 2);
+            Vector3 spawnPosition = new(randomX, randomY, 0);
+
+            while (IsPositionAwayFromObject(spawnPosition, player.transform.position, spawnDistanceFromPlayer))
+            {
+                randomX = Random.Range(-_screenBounds.x / 2, _screenBounds.x / 2);
+                randomY = Random.Range(-_screenBounds.y / 2, _screenBounds.y / 2);
+            }
+
             return new Vector3(randomX, randomY, 0);
+        }
+
+        private bool IsPositionAwayFromObject(Vector3 spawnPosition, Vector3 objectPosition, int distance)
+        {
+            return Vector3.Distance(spawnPosition, objectPosition) > distance;
         }
 
         private void CalculateScreenBounds()

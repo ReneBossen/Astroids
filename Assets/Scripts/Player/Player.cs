@@ -16,8 +16,6 @@ namespace Assets.Scripts.Player
             GameManager.Instance.OnStartGame += GameManager_OnStartGame;
             GameManager.Instance.OnRestartGame += GameManager_OnRestartGame;
             GameManager.Instance.OnGameOver += GameManager_OnGameOver;
-
-            gameObject.SetActive(false);
         }
 
         private void GameManager_OnStartGame(object sender, EventArgs e)
