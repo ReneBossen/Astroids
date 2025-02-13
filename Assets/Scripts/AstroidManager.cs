@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -167,24 +168,24 @@ namespace Assets.Scripts
         private Vector3 GetRandomSpawnPosition()
         {
             GameObject player = GameManager.Instance.GetActivePlayer();
-            const int spawnDistanceFromPlayer = 1;
+            Vector3 spawnPosition = GenerateRandomPositionOnScreen();
+            const float spawnDistanceFromPlayer = 2.5f;
 
-            float randomX = Random.Range(-_screenBounds.x / 2, _screenBounds.x / 2);
-            float randomY = Random.Range(-_screenBounds.y / 2, _screenBounds.y / 2);
-            Vector3 spawnPosition = new(randomX, randomY, 0);
-
-            while (IsPositionAwayFromObject(spawnPosition, player.transform.position, spawnDistanceFromPlayer))
+            while (Vector3.Distance(player.transform.position, spawnPosition) < spawnDistanceFromPlayer)
             {
-                randomX = Random.Range(-_screenBounds.x / 2, _screenBounds.x / 2);
-                randomY = Random.Range(-_screenBounds.y / 2, _screenBounds.y / 2);
+                spawnPosition = GenerateRandomPositionOnScreen();
             }
 
-            return new Vector3(randomX, randomY, 0);
+            return spawnPosition;
         }
 
-        private bool IsPositionAwayFromObject(Vector3 spawnPosition, Vector3 objectPosition, int distance)
+        private Vector3 GenerateRandomPositionOnScreen()
         {
-            return Vector3.Distance(spawnPosition, objectPosition) > distance;
+            float randomX = Random.Range(-_screenBounds.x / 2, _screenBounds.x / 2);
+            float randomY = Random.Range(-_screenBounds.y / 2, _screenBounds.y / 2);
+            Vector3 position = new(randomX, randomY, 0);
+
+            return position;
         }
 
         private void CalculateScreenBounds()
