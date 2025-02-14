@@ -99,6 +99,7 @@ GameObject:
   - component: {fileID: 727384552838072886}
   - component: {fileID: -6708923335865978951}
   - component: {fileID: 4087179283588443435}
+  - component: {fileID: -2058353456867428204}
   m_Layer: 0
   m_Name: Astroid_6
   m_TagString: Untagged
@@ -185,3 +186,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2f7baa45420520498a204997737490f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-2058353456867428204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6116067141655833507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 2934551326
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
