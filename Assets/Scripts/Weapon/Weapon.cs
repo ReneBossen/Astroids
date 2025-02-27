@@ -1,4 +1,5 @@
 using Assets.Scripts.Helpers;
+using Mirror;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,7 +8,7 @@ using PlayerInput = Assets.Scripts.Player.PlayerInput;
 
 namespace Assets.Scripts.Weapon
 {
-    public class Weapon : MonoBehaviour
+    public class Weapon : NetworkBehaviour
     {
         [SerializeField] private GameObject _bulletPrefab;
         [SerializeField] private Transform _bulletSpawnPoint;
@@ -17,7 +18,6 @@ namespace Assets.Scripts.Weapon
         private readonly Dictionary<GameObject, Coroutine> _activeCoroutines = new();
 
         private PlayerInput _playerInput;
-        private GameObject _bulletPool;
 
         private void Awake()
         {
@@ -26,8 +26,10 @@ namespace Assets.Scripts.Weapon
 
         private void Start()
         {
-            _bulletPool = new GameObject("BulletPool");
-            InstantiateBulletPrefabs(30);
+            if (isServer)
+            {
+                SpawnBulletPool(30);
+            }
         }
 
         private void OnEnable()
@@ -42,8 +44,21 @@ namespace Assets.Scripts.Weapon
             _playerInput.Disable();
         }
 
+        [Server]
+        private void SpawnBulletPool(int amount)
+        {
+            GameObject bulletPool = new("BulletPool");
+            bulletPool.AddComponent<NetworkIdentity>();
+            NetworkServer.Spawn(bulletPool);
+
+            InstantiateBulletPrefabs(amount, bulletPool);
+        }
+
         private void OnShoot(InputAction.CallbackContext obj)
         {
+            if (!isLocalPlayer)
+                return;
+
             GameObject bullet = _spawnedBulletPrefabs.FirstOrDefault(bullet => !bullet.activeInHierarchy);
 
             if (bullet == null)
@@ -77,10 +92,11 @@ namespace Assets.Scripts.Weapon
             bullet.SetActive(false);
         }
 
-        private async void InstantiateBulletPrefabs(int amount)
+        [Server]
+        private async void InstantiateBulletPrefabs(int amount, GameObject bulletPool)
         {
             _spawnedBulletPrefabs.AddRange(
-                await ObjectPoolHandler.Instance.InstantiateObjectPool(_bulletPrefab, _bulletPool, amount));
+                await ObjectPoolHandler.Instance.InstantiateObjectPool(_bulletPrefab, bulletPool, amount));
 
             _spawnedBulletPrefabs.ForEach(bullet => bullet.GetComponent<Bullet>().OnBulletHit += OnBulletHit);
         }

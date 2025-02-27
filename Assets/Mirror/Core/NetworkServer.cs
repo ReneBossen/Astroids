@@ -1,7 +1,7 @@
+using Mirror.RemoteCalls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Mirror.RemoteCalls;
 using UnityEngine;
 
 namespace Mirror
@@ -184,7 +184,8 @@ namespace Mirror
 
             // reset Interest Management so that rebuild intervals
             // start at 0 when starting again.
-            if (aoi != null) aoi.ResetState();
+            if (aoi != null)
+                aoi.ResetState();
 
             // reset NetworkTime
             NetworkTime.ResetStatics();
@@ -272,7 +273,8 @@ namespace Mirror
             OnErrorEvent = null;
             OnTransportExceptionEvent = null;
 
-            if (aoi != null) aoi.ResetState();
+            if (aoi != null)
+                aoi.ResetState();
         }
 
         static void RemoveTransportHandlers()
@@ -847,7 +849,8 @@ namespace Mirror
                     Debug.LogError($"Still had {connection.unbatcher.BatchesCount} batches remaining after processing, even though processing was not interrupted by a scene change. This should never happen, as it would cause ever growing batches.\nPossible reasons:\n* A message didn't deserialize as much as it serialized\n*There was no message handler for a message id, so the reader wasn't read until the end.");
                 }
             }
-            else Debug.LogError($"HandleData Unknown connectionId:{connectionId}");
+            else
+                Debug.LogError($"HandleData Unknown connectionId:{connectionId}");
         }
 
         // called by transport
@@ -1220,7 +1223,8 @@ namespace Mirror
         /// <summary>Removes player object for the connection. Options to keep the object in play, unspawn it, or destroy it.</summary>
         public static void RemovePlayerForConnection(NetworkConnectionToClient conn, RemovePlayerOptions removeOptions = RemovePlayerOptions.KeepActive)
         {
-            if (conn.identity == null) return;
+            if (conn.identity == null)
+                return;
 
             switch (removeOptions)
             {
@@ -1369,7 +1373,8 @@ namespace Mirror
         // spawning ////////////////////////////////////////////////////////////
         internal static void SendSpawnMessage(NetworkIdentity identity, NetworkConnection conn)
         {
-            if (identity.serverOnly) return;
+            if (identity.serverOnly)
+                return;
 
             //Debug.Log($"Server SendSpawnMessage: name:{identity.name} sceneId:{identity.sceneId:X} netid:{identity.netId}");
 
@@ -1422,11 +1427,13 @@ namespace Mirror
         internal static void SendChangeOwnerMessage(NetworkIdentity identity, NetworkConnectionToClient conn)
         {
             // Don't send if identity isn't spawned or only exists on server
-            if (identity.netId == 0 || identity.serverOnly) return;
+            if (identity.netId == 0 || identity.serverOnly)
+                return;
 
             // Don't send if conn doesn't have the identity spawned yet
             // May be excluded from the client by interest management
-            if (!conn.observing.Contains(identity)) return;
+            if (!conn.observing.Contains(identity))
+                return;
 
             //Debug.Log($"Server SendChangeOwnerMessage: name={identity.name} netid={identity.netId}");
 
@@ -1938,7 +1945,8 @@ namespace Mirror
 
             // recover from null entries.
             // otherwise every broadcast will spam the warning and slow down performance until restart.
-            if (hasNull) connection.observing.RemoveWhere(identity => identity == null);
+            if (hasNull)
+                connection.observing.RemoveWhere(identity => identity == null);
         }
 
         // helper function to check a connection for inactivity and disconnect if necessary
@@ -2027,7 +2035,8 @@ namespace Mirror
             foreach (NetworkConnectionToClient connection in connections.Values)
                 connection.UpdateTimeInterpolation();
 
-            if (active) earlyUpdateDuration.End();
+            if (active)
+                earlyUpdateDuration.End();
         }
 
         internal static void NetworkLateUpdate()

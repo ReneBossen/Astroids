@@ -19,7 +19,7 @@ namespace Mirror
         /// <summary>Ping message interval, used to calculate latency / RTT and predicted time.</summary>
         // 2s was enough to get a good average RTT.
         // for prediction, we want to react to latency changes more rapidly.
-        const float DefaultPingInterval = 0.1f; // for resets
+        const float DefaultPingInterval = 2f; // for resets
         public static float PingInterval = DefaultPingInterval;
 
         /// <summary>Average out the last few results from Ping</summary>
@@ -192,7 +192,8 @@ namespace Mirror
         internal static void OnClientPong(NetworkPongMessage message)
         {
             // prevent attackers from sending timestamps which are in the future
-            if (message.localTime > localTime) return;
+            if (message.localTime > localTime)
+                return;
 
             // how long did this message take to come back
             double newRtt = localTime - message.localTime;
@@ -226,7 +227,8 @@ namespace Mirror
         internal static void OnServerPong(NetworkConnectionToClient conn, NetworkPongMessage message)
         {
             // prevent attackers from sending timestamps which are in the future
-            if (message.localTime > localTime) return;
+            if (message.localTime > localTime)
+                return;
 
             // how long did this message take to come back
             double newRtt = localTime - message.localTime;

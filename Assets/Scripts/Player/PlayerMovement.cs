@@ -1,9 +1,10 @@
+using Mirror;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Assets.Scripts.Player
 {
-    public class PlayerMovement : MonoBehaviour
+    public class PlayerMovement : NetworkBehaviour
     {
         [SerializeField] private float _thrustForce;
         [SerializeField] private float _drag;
@@ -30,6 +31,9 @@ namespace Assets.Scripts.Player
 
         private void FixedUpdate()
         {
+            if (!isLocalPlayer)
+                return;
+
             ApplyThrust(_Input.y);
             ApplyRotation(_Input.x);
         }

@@ -1,17 +1,21 @@
 using Assets.Scripts.UI;
+using Mirror;
 using System;
 using UnityEngine;
 
 namespace Assets.Scripts
 {
-    public class Health : MonoBehaviour
+    public class Health : NetworkBehaviour
     {
         public static Health Instance { get; private set; }
 
         public event EventHandler OnPlayerDeath;
         public event EventHandler OnPlayerTakeDamage;
         public event EventHandler OnRetartGame;
-        public int CurrentHealth { get; private set; }
+
+        [SyncVar]
+        private int _currentHealth;
+        public int CurrentHealth => _currentHealth;
 
         private int _maxHealth;
 
@@ -24,7 +28,7 @@ namespace Assets.Scripts
             Instance = this;
 
             _maxHealth = 3;
-            CurrentHealth = _maxHealth;
+            _currentHealth = _maxHealth;
         }
 
         private void Start()
@@ -46,12 +50,12 @@ namespace Assets.Scripts
 
         private void RestartGame()
         {
-            CurrentHealth = _maxHealth;
+            _currentHealth = _maxHealth;
         }
 
         private void TakeDamage()
         {
-            CurrentHealth--;
+            _currentHealth--;
 
             OnPlayerTakeDamage?.Invoke(this, EventArgs.Empty);
 
@@ -60,7 +64,7 @@ namespace Assets.Scripts
 
         private void CheckIfDead()
         {
-            if (CurrentHealth > 0)
+            if (_currentHealth > 0)
                 return;
 
             Debug.Log("Player dead");

@@ -1,17 +1,15 @@
 using Assets.Scripts.Helpers;
-using Assets.Scripts.Player;
+using Mirror;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Assets.Scripts
 {
-    public class AstroidManager : MonoBehaviour
+    public class AstroidManager : NetworkBehaviour
     {
         public static AstroidManager Instance { get; private set; }
 
@@ -26,8 +24,11 @@ namespace Assets.Scripts
         [SerializeField] private List<GameObject> _astroidPrefabs;
         [SerializeField] private GameObject _explosionPrefab;
 
+        [SyncVar]
         private readonly List<GameObject> _instantiatedAstroids = new();
+        [SyncVar]
         private readonly List<GameObject> _spawnedAstroids = new();
+        [SyncVar]
         private readonly List<GameObject> _explosionPrefabs = new();
 
         private Camera _camera;
@@ -52,9 +53,13 @@ namespace Assets.Scripts
         {
             _explosionPool = new GameObject("ExplosionPool");
             _astroidPool = new GameObject("AstroidPool");
-            InstantiateExplosionEffects(10);
+            if (isServer)
+            {
 
-            _ = InstantiateAstroids(30);
+                InstantiateExplosionEffects(10);
+
+                _ = InstantiateAstroids(30);
+            }
 
             LevelManager.Instance.OnLevelStarted += LevelManager_OnLevelStarted;
             GameManager.Instance.OnGameOver += GameManager_OnGameOver;
@@ -72,12 +77,14 @@ namespace Assets.Scripts
             SpawnAstroids(astroidsToSpawn);
         }
 
+        [Server]
         private async Task InstantiateAstroids(int amount)
         {
             _instantiatedAstroids.AddRange(
                 await ObjectPoolHandler.Instance.InstantiateRandomObjectPoolByList(_astroidPrefabs, _astroidPool, amount));
         }
 
+        [Server]
         public async void SpawnAstroids(int amount)
         {
             if (amount > _instantiatedAstroids.Count)
@@ -88,6 +95,7 @@ namespace Assets.Scripts
             PlaceAstroids(amount);
         }
 
+        [Server]
         private void PlaceAstroids(int amount)
         {
             for (int i = 0; i < amount; i++)
@@ -109,6 +117,7 @@ namespace Assets.Scripts
             }
         }
 
+        [Server]
         private async void InstantiateExplosionEffects(int amount)
         {
             _explosionPrefabs.AddRange(
@@ -167,13 +176,16 @@ namespace Assets.Scripts
 
         private Vector3 GetRandomSpawnPosition()
         {
-            GameObject player = GameManager.Instance.GetActivePlayer();
+            List<GameObject> players = GameManager.Instance.Players;
             Vector3 spawnPosition = GenerateRandomPositionOnScreen();
             const float spawnDistanceFromPlayer = 2.5f;
 
-            while (Vector3.Distance(player.transform.position, spawnPosition) < spawnDistanceFromPlayer)
+            foreach (GameObject player in players)
             {
-                spawnPosition = GenerateRandomPositionOnScreen();
+                while (Vector3.Distance(player.transform.position, spawnPosition) < spawnDistanceFromPlayer)
+                {
+                    spawnPosition = GenerateRandomPositionOnScreen();
+                }
             }
 
             return spawnPosition;

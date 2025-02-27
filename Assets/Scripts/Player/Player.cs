@@ -1,9 +1,10 @@
+using Mirror;
 using System;
 using UnityEngine;
 
 namespace Assets.Scripts.Player
 {
-    public class Player : MonoBehaviour
+    public class Player : NetworkBehaviour
     {
         private Weapon.Weapon _weapon;
         private PlayerMovement _playerMovement;
