@@ -19,7 +19,7 @@ namespace Mirror
         /// <summary>Ping message interval, used to calculate latency / RTT and predicted time.</summary>
         // 2s was enough to get a good average RTT.
         // for prediction, we want to react to latency changes more rapidly.
-        const float DefaultPingInterval = .5f; // for resets
+        const float DefaultPingInterval = 2f; // for resets
         public static float PingInterval = DefaultPingInterval;
 
         /// <summary>Average out the last few results from Ping</summary>
