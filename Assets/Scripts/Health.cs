@@ -13,7 +13,7 @@ namespace Assets.Scripts
         public event EventHandler OnPlayerTakeDamage;
         public event EventHandler OnRetartGame;
 
-        [SyncVar]
+        [SyncVar(hook = nameof(OnCurrentHealthChanged))]
         private int _currentHealth;
         public int CurrentHealth => _currentHealth;
 
@@ -31,37 +31,44 @@ namespace Assets.Scripts
             _currentHealth = _maxHealth;
         }
 
-        private void Start()
+        public override void OnStartServer()
         {
             AstroidManager.Instance.OnPlayerHitByAstroid += AstroidManager_OnPlayerHitByAstroid;
             GameOverUIManager.Instance.OnRestartGame += GameOverUIManager_OnRestartGame;
         }
 
+        [Server]
         private void GameOverUIManager_OnRestartGame(object sender, EventArgs e)
         {
             RestartGame();
             OnRetartGame?.Invoke(this, EventArgs.Empty);
         }
 
+        [Server]
         private void AstroidManager_OnPlayerHitByAstroid(object sender, EventArgs e)
         {
             TakeDamage();
         }
 
+        [Server]
         private void RestartGame()
         {
             _currentHealth = _maxHealth;
         }
 
+        [Server]
         private void TakeDamage()
         {
             _currentHealth--;
-
-            OnPlayerTakeDamage?.Invoke(this, EventArgs.Empty);
-
             CheckIfDead();
         }
 
+        private void OnCurrentHealthChanged(int oldValue, int newValue)
+        {
+            OnPlayerTakeDamage?.Invoke(this, EventArgs.Empty);
+        }
+
+        [Server]
         private void CheckIfDead()
         {
             if (_currentHealth > 0)

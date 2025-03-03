@@ -4,6 +4,7 @@ using Assets.Scripts.Weapon;
 using Mirror;
 using System;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 using Random = UnityEngine.Random;
 
 namespace Assets.Scripts
@@ -11,7 +12,7 @@ namespace Assets.Scripts
     public class Astroid : NetworkBehaviour, ISyncVariables
     {
         public event EventHandler<OnAstroidHitEventArgs> OnAstroidHit;
-        public event EventHandler OnPlayerHit;
+        public event EventHandler<OnAstroidHitEventArgs> OnPlayerHit;
 
         public class OnAstroidHitEventArgs : EventArgs
         {
@@ -61,7 +62,11 @@ namespace Assets.Scripts
         {
             if (collider.gameObject.GetComponent<Player.Player>() != null)
             {
-                OnPlayerHit?.Invoke(this, EventArgs.Empty);
+                OnPlayerHit?.Invoke(this, new OnAstroidHitEventArgs
+                {
+                    Astroid = gameObject,
+                    Value = _scoreValue
+                });
             }
 
             OnAstroidHit?.Invoke(this, new OnAstroidHitEventArgs

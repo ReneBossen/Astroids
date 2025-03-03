@@ -55,7 +55,6 @@ namespace Assets.Scripts
         {
             _astroidQueue = ObjectPoolHandler.Instance.AstroidQueue;
             _astroidQueueReady = true;
-            Debug.Log($"[ASTMNG] AstroidQueueCreated and saved in Manager");
 
             if (_pendingLevelStartedArgs != null)
             {
@@ -108,24 +107,27 @@ namespace Assets.Scripts
             astroid.transform.position = position;
         }
 
-        [Server]
-        private async void InstantiateExplosionEffects(int amount)
-        {
-            //_explosionPrefabs.AddRange(
-            //    await ObjectPoolHandler.Instance.InstantiateObjectPool(_explosionPrefab, _explosionPool, amount));
-        }
-
-        private void Astroid_HandleAstroidHitPlayer(object sender, EventArgs e)
-        {
-            OnPlayerHitByAstroid?.Invoke(this, EventArgs.Empty);
-        }
-
         private void GameManager_OnGameOver(object sender, EventArgs e)
         {
             DestroyAllRemainingAstroids();
         }
 
+        [Server]
+        private void Astroid_HandleAstroidHitPlayer(object sender, Astroid.OnAstroidHitEventArgs astroid)
+        {
+            OnPlayerHitByAstroid?.Invoke(this, EventArgs.Empty);
+
+            AstroidHit(astroid.Astroid, astroid.Value);
+        }
+
+        [Server]
         private void Astroid_HandleAstroidHit(object sender, Astroid.OnAstroidHitEventArgs astroid)
+        {
+            AstroidHit(astroid.Astroid, astroid.Value);
+        }
+
+        [Server]
+        private void AstroidHit(GameObject astroid, int score)
         {
             //SpawnExplosion(astroid.Astroid);
 
@@ -133,24 +135,27 @@ namespace Assets.Scripts
 
             OnAstroidDestroyed?.Invoke(this, new OnAstroidDestroyedEventArgs
             {
-                score = astroid.Value
+                score = score
             });
 
-            astroid.Astroid.GetComponent<Astroid>().OnAstroidHit -= Astroid_HandleAstroidHit;
-            astroid.Astroid.GetComponent<Astroid>().OnPlayerHit -= Astroid_HandleAstroidHitPlayer;
+            Astroid astroidScript = astroid.GetComponent<Astroid>();
 
-            _spawnedAstroids.Remove(astroid.Astroid);
+            astroidScript.OnAstroidHit -= Astroid_HandleAstroidHit;
+            astroidScript.OnPlayerHit -= Astroid_HandleAstroidHitPlayer;
 
-            gameObject.SetActive(false);
+            _spawnedAstroids.Remove(astroid);
+
+            astroid.GetComponent<VariableSync>().IsActive = false;
         }
 
+        [Server]
         private void DestroyAllRemainingAstroids()
         {
             _spawnedAstroids.ForEach(astroid =>
             {
                 astroid.GetComponent<Astroid>().OnAstroidHit -= Astroid_HandleAstroidHit;
                 astroid.GetComponent<Astroid>().OnPlayerHit -= Astroid_HandleAstroidHitPlayer;
-                gameObject.SetActive(false);
+                astroid.GetComponent<VariableSync>().IsActive = false;
             });
         }
 

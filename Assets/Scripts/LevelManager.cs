@@ -1,3 +1,4 @@
+using Mirror;
 using System;
 using UnityEngine;
 
@@ -63,7 +64,7 @@ namespace Assets.Scripts
             });
         }
 
-
+        [Server]
         public void AsteroidDestroyed()
         {
             _astroidsRemaining--;
