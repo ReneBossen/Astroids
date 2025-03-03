@@ -722,7 +722,8 @@ namespace Mirror
 
         internal void OnStartClient()
         {
-            if (clientStarted) return;
+            if (clientStarted)
+                return;
 
             clientStarted = true;
 
@@ -750,7 +751,8 @@ namespace Mirror
         {
             // In case this object was destroyed already don't call
             // OnStopClient if OnStartClient hasn't been called.
-            if (!clientStarted) return;
+            if (!clientStarted)
+                return;
 
             foreach (NetworkBehaviour comp in NetworkBehaviours)
             {
@@ -899,7 +901,8 @@ namespace Mirror
                 {
                     // set the n-th bit if dirty
                     // shifting from small to large numbers is varint-efficient.
-                    if (component.IsDirty()) mask |= nthBit;
+                    if (component.IsDirty())
+                        mask |= nthBit;
                 }
             }
 
@@ -934,8 +937,10 @@ namespace Mirror
 
             // if nothing dirty, then don't even write the mask.
             // otherwise, every unchanged object would send a 1 byte dirty mask!
-            if (ownerMask != 0) Compression.CompressVarUInt(ownerWriter, ownerMask);
-            if (observerMask != 0) Compression.CompressVarUInt(observersWriter, observerMask);
+            if (ownerMask != 0)
+                Compression.CompressVarUInt(ownerWriter, ownerMask);
+            if (observerMask != 0)
+                Compression.CompressVarUInt(observersWriter, observerMask);
 
             // serialize all components
             // perf: only iterate if either dirty mask has dirty bits.
@@ -968,8 +973,10 @@ namespace Mirror
                             ArraySegment<byte> segment = temp.ToArraySegment();
 
                             // copy to owner / observers as needed
-                            if (ownerDirty) ownerWriter.WriteBytes(segment.Array, segment.Offset, segment.Count);
-                            if (observersDirty) observersWriter.WriteBytes(segment.Array, segment.Offset, segment.Count);
+                            if (ownerDirty)
+                                ownerWriter.WriteBytes(segment.Array, segment.Offset, segment.Count);
+                            if (observersDirty)
+                                observersWriter.WriteBytes(segment.Array, segment.Offset, segment.Count);
                         }
 
                         // clear dirty bits for the components that we serialized.
@@ -983,7 +990,8 @@ namespace Mirror
                         // otherwise if a player joins, we serialize monster,
                         // and shouldn't clear dirty bits not yet synced to
                         // other players.
-                        if (!initialState) comp.ClearAllDirtyBits();
+                        if (!initialState)
+                            comp.ClearAllDirtyBits();
                     }
                 }
             }
@@ -1014,7 +1022,8 @@ namespace Mirror
 
             // if nothing dirty, then don't even write the mask.
             // otherwise, every unchanged object would send a 1 byte dirty mask!
-            if (dirtyMask != 0) Compression.CompressVarUInt(writer, dirtyMask);
+            if (dirtyMask != 0)
+                Compression.CompressVarUInt(writer, dirtyMask);
 
             // serialize all components
             // perf: only iterate if dirty mask has dirty bits.
@@ -1072,7 +1081,8 @@ namespace Mirror
                         // deserialize this component
                         // server always knows the initial state (initial=false)
                         // disconnect if failed, to prevent exploits etc.
-                        if (!comp.Deserialize(reader, false)) return false;
+                        if (!comp.Deserialize(reader, false))
+                            return false;
 
                         // server received state from the owner client.
                         // set dirty so it's broadcast to other clients too.

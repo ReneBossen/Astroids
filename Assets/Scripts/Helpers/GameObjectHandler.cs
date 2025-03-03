@@ -1,17 +1,27 @@
+using Mirror;
 using System.Collections;
 using UnityEngine;
 
 namespace Assets.Scripts.Helpers
 {
-    public class GameObjectHandler : MonoBehaviour
+    public class GameObjectHandler : NetworkBehaviour
     {
-        public static IEnumerator DisableAfterTime(GameObject prefab, float time)
+        public static GameObjectHandler Instance { get; private set; }
+
+        private void Awake()
         {
-            yield return new WaitForSeconds(time);
-            prefab.SetActive(false);
+            if (Instance != null)
+            {
+                Destroy(gameObject);
+            }
+            else
+            {
+                Instance = this;
+            }
         }
 
-        public static void RepositionGameObject(GameObject value, Vector2 position)
+        [Command]
+        public void RepositionGameObject(GameObject value, Vector2 position)
         {
             value.transform.position = position;
         }

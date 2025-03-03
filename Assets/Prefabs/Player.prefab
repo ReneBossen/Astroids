@@ -131,9 +131,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a9e6fba57fbb944db324d0d8f0d1935, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _bulletPrefab: {fileID: 459994128919670303, guid: e187bf1432e118c4ebd48b5e7d4b9c60, type: 3}
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   _bulletSpawnPoint: {fileID: 2923054449759813772}
-  _lifeTimer: 1
 --- !u!114 &3145201111207478746
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,6 +147,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f4c55a4f94fb294d974c47448ba2801, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   _thrustForce: 3
   _drag: 0.99
   _rotationSpeed: 200

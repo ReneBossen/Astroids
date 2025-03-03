@@ -120,8 +120,8 @@ namespace Assets.Scripts
         [Server]
         private async void InstantiateExplosionEffects(int amount)
         {
-            _explosionPrefabs.AddRange(
-                await ObjectPoolHandler.Instance.InstantiateObjectPool(_explosionPrefab, _explosionPool, amount));
+            //_explosionPrefabs.AddRange(
+            //    await ObjectPoolHandler.Instance.InstantiateObjectPool(_explosionPrefab, _explosionPool, amount));
         }
 
         private void Astroid_HandleAstroidHitPlayer(object sender, EventArgs e)
@@ -135,7 +135,6 @@ namespace Assets.Scripts
 
             LevelManager.Instance.AsteroidDestroyed();
 
-
             OnAstroidDestroyed?.Invoke(this, new OnAstroidDestroyedEventArgs
             {
                 score = astroid.Value
@@ -146,7 +145,7 @@ namespace Assets.Scripts
 
             _spawnedAstroids.Remove(astroid.Astroid);
 
-            StartCoroutine(GameObjectHandler.DisableAfterTime(astroid.Astroid, 0f));
+            gameObject.SetActive(false);
         }
 
         private void DestroyAllRemainingAstroids()
@@ -155,7 +154,7 @@ namespace Assets.Scripts
             {
                 astroid.GetComponent<Astroid>().OnAstroidHit -= Astroid_HandleAstroidHit;
                 astroid.GetComponent<Astroid>().OnPlayerHit -= Astroid_HandleAstroidHitPlayer;
-                StartCoroutine(GameObjectHandler.DisableAfterTime(astroid, 0f));
+                gameObject.SetActive(false);
             });
         }
 
@@ -166,12 +165,12 @@ namespace Assets.Scripts
             if (explosion == null)
                 return;
 
-            GameObjectHandler.RepositionGameObject(explosion, astroid.transform.position);
+            GameObjectHandler.Instance.RepositionGameObject(explosion, astroid.transform.position);
 
             explosion.SetActive(true);
             explosion.GetComponent<ParticleSystem>().Play();
 
-            StartCoroutine(GameObjectHandler.DisableAfterTime(explosion, 1f));
+            gameObject.SetActive(false); //Should be deactivated after 1 sec
         }
 
         private Vector3 GetRandomSpawnPosition()
