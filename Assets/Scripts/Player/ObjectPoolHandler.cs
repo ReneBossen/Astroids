@@ -14,6 +14,8 @@ namespace Assets.Scripts.Helpers
     {
         public static ObjectPoolHandler Instance { get; private set; }
 
+        public event EventHandler OnAstroidQueueCreated;
+
         [SerializeField] private GameObject _emptyParent;
 
         [Header("Bullet Pool")]
@@ -78,6 +80,8 @@ namespace Assets.Scripts.Helpers
                 GameObject randomAstroid = _astroidPrefabs[Random.Range(0, _astroidPrefabs.Count)];
                 InstantiateObjects(randomAstroid, AstroidQueue, astroidPool);
             }
+
+            OnAstroidQueueCreated?.Invoke(this, EventArgs.Empty);
         }
 
         [Server]

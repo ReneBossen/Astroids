@@ -86,13 +86,6 @@ namespace Assets.Scripts.Network
             }
 
             SpawnPlayer(conn);
-
-            //foreach (Player.Player playerComponent in NetworkServer.spawned
-            //             .Select(kvp => kvp.Value.GetComponent<Player.Player>())
-            //             .Where(player => player != null && !Players.Contains(player)))
-            //{
-            //    Players.Add(playerComponent);
-            //}
         }
 
         [Server]

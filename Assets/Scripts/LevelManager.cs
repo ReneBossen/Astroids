@@ -54,6 +54,7 @@ namespace Assets.Scripts
 
         private void StartLevel()
         {
+            Debug.Log($"[LVLMNG] StartLevel called");
             _astroidsRemaining = _astroidsToSpawn * CurrentLevel;
             OnLevelStarted?.Invoke(this, new OnLevelStartedEventArgs
             {

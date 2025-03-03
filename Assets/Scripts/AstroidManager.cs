@@ -1,4 +1,5 @@
 using Assets.Scripts.Helpers;
+using Assets.Scripts.Network;
 using Mirror;
 using System;
 using System.Collections.Generic;
@@ -21,20 +22,14 @@ namespace Assets.Scripts
             public int score;
         }
 
-        //[SerializeField] private List<GameObject> _astroidPrefabs;
-        //[SerializeField] private GameObject _explosionPrefab;
-
-        [SyncVar]
-        private readonly List<GameObject> _instantiatedAstroids = new();
-        [SyncVar]
-        private readonly List<GameObject> _spawnedAstroids = new();
-        [SyncVar]
-        private readonly List<GameObject> _explosionPrefabs = new();
-
         private Camera _camera;
         private Vector2 _screenBounds;
-        private GameObject _explosionPool;
-        private GameObject _astroidPool;
+        private Queue<GameObject> _astroidQueue;
+        //private Queue<GameObject> _explosionPrefabs = new();
+        private List<GameObject> _spawnedAstroids = new();
+
+        private bool _astroidQueueReady = false;
+        private LevelManager.OnLevelStartedEventArgs _pendingLevelStartedArgs;
 
         private void Awake()
         {
@@ -49,71 +44,68 @@ namespace Assets.Scripts
             CalculateScreenBounds();
         }
 
-        private void Start()
+        public override void OnStartServer()
         {
-            _explosionPool = new GameObject("ExplosionPool");
-            _astroidPool = new GameObject("AstroidPool");
-            if (isServer)
-            {
-                InstantiateExplosionEffects(10);
-
-                _ = InstantiateAstroids(30);
-            }
-
             LevelManager.Instance.OnLevelStarted += LevelManager_OnLevelStarted;
             GameManager.Instance.OnGameOver += GameManager_OnGameOver;
+            ObjectPoolHandler.Instance.OnAstroidQueueCreated += ObjectPoolHandler_OnAstroidQueueCreated;
         }
 
-        private void GameManager_OnGameOver(object sender, EventArgs e)
+        private void ObjectPoolHandler_OnAstroidQueueCreated(object sender, EventArgs e)
         {
-            DestroyAllRemainingAstroids();
+            _astroidQueue = ObjectPoolHandler.Instance.AstroidQueue;
+            _astroidQueueReady = true;
+            Debug.Log($"[ASTMNG] AstroidQueueCreated and saved in Manager");
+
+            if (_pendingLevelStartedArgs != null)
+            {
+                LevelManager_OnLevelStarted(this, _pendingLevelStartedArgs);
+                _pendingLevelStartedArgs = null;
+            }
         }
 
         private void LevelManager_OnLevelStarted(object sender, LevelManager.OnLevelStartedEventArgs args)
         {
+            if (!_astroidQueueReady)
+            {
+                Debug.Log($"[ASTMNG] AstroidQueue not ready. Waiting for queue to be ready");
+                _pendingLevelStartedArgs = args;
+                return;
+            }
+
+            Debug.Log($"[ASTMNG] AstroidQueue Count: {_astroidQueue.Count}");
             int astroidsToSpawn = args.AstroidsRemaining;
 
             SpawnAstroids(astroidsToSpawn);
         }
 
         [Server]
-        private async Task InstantiateAstroids(int amount)
-        {
-            //_instantiatedAstroids.AddRange(
-            //    await ObjectPoolHandler.Instance.InstantiateRandomObjectPoolByList(_astroidPrefabs, _astroidPool, amount));
-        }
-
-        [Server]
-        public async void SpawnAstroids(int amount)
-        {
-            if (amount > _instantiatedAstroids.Count)
-            {
-                await InstantiateAstroids(Mathf.Abs(amount - _instantiatedAstroids.Count));
-            }
-
-            PlaceAstroids(amount);
-        }
-
-        [Server]
-        private void PlaceAstroids(int amount)
+        public void SpawnAstroids(int amount)
         {
             for (int i = 0; i < amount; i++)
             {
-                GameObject astroid = _instantiatedAstroids.OrderBy(astroid => Random.Range(0, _instantiatedAstroids.Count)).FirstOrDefault(astroid => !astroid.activeInHierarchy);
+                GameObject astroid = _astroidQueue.Dequeue();
 
                 if (astroid == null)
-                {
                     return;
-                }
 
-                astroid.transform.position = GetRandomSpawnPosition();
+                Vector3 spawnPosition = GetRandomSpawnPosition();
+                astroid.transform.position = spawnPosition;
+                RepositionAstroidRpc(astroid, spawnPosition);
+
                 _spawnedAstroids.Add(astroid);
 
-                astroid.SetActive(true);
+                astroid.GetComponent<VariableSync>().IsActive = true;
 
                 astroid.GetComponent<Astroid>().OnAstroidHit += Astroid_HandleAstroidHit;
                 astroid.GetComponent<Astroid>().OnPlayerHit += Astroid_HandleAstroidHitPlayer;
             }
+        }
+
+        [ClientRpc]
+        private void RepositionAstroidRpc(GameObject astroid, Vector3 position)
+        {
+            astroid.transform.position = position;
         }
 
         [Server]
@@ -128,9 +120,14 @@ namespace Assets.Scripts
             OnPlayerHitByAstroid?.Invoke(this, EventArgs.Empty);
         }
 
+        private void GameManager_OnGameOver(object sender, EventArgs e)
+        {
+            DestroyAllRemainingAstroids();
+        }
+
         private void Astroid_HandleAstroidHit(object sender, Astroid.OnAstroidHitEventArgs astroid)
         {
-            SpawnExplosion(astroid.Astroid);
+            //SpawnExplosion(astroid.Astroid);
 
             LevelManager.Instance.AsteroidDestroyed();
 
@@ -157,20 +154,20 @@ namespace Assets.Scripts
             });
         }
 
-        private void SpawnExplosion(GameObject astroid)
-        {
-            GameObject explosion = _explosionPrefabs.FirstOrDefault(explosion => !explosion.activeInHierarchy);
+        //private void SpawnExplosion(GameObject astroid)
+        //{
+        //    GameObject explosion = _explosionPrefabs.FirstOrDefault(explosion => !explosion.activeInHierarchy);
 
-            if (explosion == null)
-                return;
+        //    if (explosion == null)
+        //        return;
 
-            //GameObjectHandler.Instance.RepositionGameObject(explosion, astroid.transform.position);
+        //    //GameObjectHandler.Instance.RepositionGameObject(explosion, astroid.transform.position);
 
-            explosion.SetActive(true);
-            explosion.GetComponent<ParticleSystem>().Play();
+        //    explosion.SetActive(true);
+        //    explosion.GetComponent<ParticleSystem>().Play();
 
-            gameObject.SetActive(false); //Should be deactivated after 1 sec
-        }
+        //    gameObject.SetActive(false); //Should be deactivated after 1 sec
+        //}
 
         private Vector3 GetRandomSpawnPosition()
         {
