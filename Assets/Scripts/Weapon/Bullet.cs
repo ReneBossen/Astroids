@@ -54,13 +54,14 @@ namespace Assets.Scripts.Weapon
             bulletScript.IsActive = false;
         }
 
-        //[ServerCallback]
-        //private void OnCollisionEnter2D()
-        //{
-        //    OnBulletHit?.Invoke(this, new BulletHitEventArgs
-        //    {
-        //        Bullet = gameObject
-        //    });
-        //}
+        [ServerCallback]
+        private void OnCollisionEnter2D()
+        {
+            IsActive = false;
+            //OnBulletHit?.Invoke(this, new BulletHitEventArgs
+            //{
+            //    Bullet = gameObject
+            //});
+        }
     }
 }
