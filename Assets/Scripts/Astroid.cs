@@ -1,10 +1,14 @@
+using Assets.Scripts.Interfaces;
+using Assets.Scripts.Network;
+using Assets.Scripts.Weapon;
+using Mirror;
 using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Assets.Scripts
 {
-    public class Astroid : MonoBehaviour
+    public class Astroid : NetworkBehaviour, ISyncVariables
     {
         public event EventHandler<OnAstroidHitEventArgs> OnAstroidHit;
         public event EventHandler OnPlayerHit;
@@ -15,12 +19,36 @@ namespace Assets.Scripts
             public int Value;
         }
 
+        public bool IsActive
+        {
+            get => SyncComponent.IsActive;
+            set => SyncComponent.IsActive = value;
+        }
+
         [SerializeField] private float _speed;
         [SerializeField] private int _scoreValue;
 
+        [SyncVar(hook = nameof(OnRotationChanged))]
+        private float zRotation;
+
+        public VariableSync SyncComponent { get; private set; }
+
+        private void Awake()
+        {
+            SyncComponent = GetComponent<VariableSync>();
+        }
+
         private void OnEnable()
         {
-            transform.Rotate(0, 0, Random.Range(0, 360));
+            if (isServer)
+            {
+                zRotation = Random.Range(0, 360);
+            }
+        }
+
+        private void OnRotationChanged(float oldRotation, float newRotation)
+        {
+            transform.Rotate(0, 0, newRotation);
         }
 
         private void Update()
@@ -28,6 +56,7 @@ namespace Assets.Scripts
             transform.Translate(Vector3.up * Time.deltaTime * _speed);
         }
 
+        [ServerCallback]
         private void OnCollisionEnter2D(Collision2D collider)
         {
             if (collider.gameObject.GetComponent<Player.Player>() != null)
@@ -40,6 +69,11 @@ namespace Assets.Scripts
                 Astroid = gameObject,
                 Value = _scoreValue
             });
+        }
+
+        private void OnActiveChanged(bool oldValue, bool newValue)
+        {
+            gameObject.SetActive(newValue);
         }
     }
 }

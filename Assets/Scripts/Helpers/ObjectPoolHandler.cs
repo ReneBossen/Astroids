@@ -1,3 +1,4 @@
+using Assets.Scripts.Network;
 using Assets.Scripts.Weapon;
 using Mirror;
 using System;
@@ -13,13 +14,19 @@ namespace Assets.Scripts.Helpers
     {
         public static ObjectPoolHandler Instance { get; private set; }
 
-        public event EventHandler OnBulletsInstantiated;
+        [SerializeField] private GameObject _emptyParent;
 
         [Header("Bullet Pool")]
         [SerializeField] private GameObject _bulletPrefab;
-        [SerializeField] private GameObject _bulletPool;
+
+        [Header("Astroid Pool")]
+        [SerializeField] private List<GameObject> _astroidPrefabs;
+
+        [Header("Explosions")]
+        [SerializeField] private GameObject _explosionPrefab;
 
         public Queue<GameObject> BulletQueue { get; } = new();
+        public Queue<GameObject> AstroidQueue { get; } = new();
 
         private void Awake()
         {
@@ -30,75 +37,68 @@ namespace Assets.Scripts.Helpers
             Instance = this;
         }
 
-        private void Start()
+        public override void OnStartServer()
         {
-            if (isServer)
-            {
-                GameManager.Instance.OnStartGame += GameManager_OnStartGame;
-            }
+            GameManager.Instance.OnStartGame += GameManager_OnStartGame;
         }
 
         [Server]
         private void GameManager_OnStartGame(object sender, EventArgs e)
         {
             CreateBulletQueue(60);
+            CreateAstroidQueue(60);
         }
 
         [Server]
         private void CreateBulletQueue(int amount)
         {
-            GameObject bulletPool = Instantiate(_bulletPool, Vector3.zero, Quaternion.identity);
-            bulletPool.TryGetComponent<NameSync>(out NameSync bulletNameSync);
+            GameObject bulletPool = Instantiate(_emptyParent, Vector3.zero, Quaternion.identity);
+            bulletPool.TryGetComponent(out NameSync bulletNameSync);
             bulletNameSync.objectName = "BulletPool";
 
             NetworkServer.Spawn(bulletPool);
 
             for (int i = 0; i < amount; i++)
             {
-                GameObject tempBullet = Instantiate(_bulletPrefab, Vector3.zero, Quaternion.identity);
-                tempBullet.TryGetComponent(out Bullet bulletScript);
-                bulletScript.IsActive = true;
-                BulletQueue.Enqueue(tempBullet);
-
-                NetworkServer.Spawn(tempBullet);
-
-                SetObjectParentRpc(tempBullet.transform, bulletPool.transform);
-
-                bulletScript.IsActive = false;
+                InstantiateObjects(_bulletPrefab, BulletQueue, bulletPool);
             }
+        }
 
-            OnBulletsInstantiated?.Invoke(this, EventArgs.Empty);
+        [Server]
+        private void CreateAstroidQueue(int amount)
+        {
+            GameObject astroidPool = Instantiate(_emptyParent, Vector3.zero, Quaternion.identity);
+            astroidPool.TryGetComponent(out NameSync astroidNameSync);
+            astroidNameSync.objectName = "AstroidPool";
+
+            NetworkServer.Spawn(astroidPool);
+
+            for (int i = 0; i < amount; i++)
+            {
+                GameObject randomAstroid = _astroidPrefabs[Random.Range(0, _astroidPrefabs.Count)];
+                InstantiateObjects(randomAstroid, AstroidQueue, astroidPool);
+            }
+        }
+
+        [Server]
+        private void InstantiateObjects(GameObject obj, Queue<GameObject> queue, GameObject parent)
+        {
+            GameObject tempObject = Instantiate(obj, Vector3.zero, Quaternion.identity);
+            tempObject.TryGetComponent(out VariableSync sync);
+            sync.IsActive = true;
+            queue.Enqueue(tempObject);
+
+            NetworkServer.Spawn(tempObject);
+
+            SetObjectParentRpc(tempObject.transform, parent.transform);
+
+            sync.IsActive = false;
         }
 
         [ClientRpc]
         private void SetObjectParentRpc(Transform childTransform, Transform parentTransform)
         {
             childTransform.SetParent(parentTransform);
-        }
-
-        [Server]
-        public async Task<List<GameObject>> InstantiateRandomObjectPoolByList(List<GameObject> prefabs, GameObject parent, int amount)
-        {
-            return await CreateRandomObjectPoolByList(prefabs, parent, amount);
-        }
-
-        [Server]
-        private async Task<List<GameObject>> CreateRandomObjectPoolByList(List<GameObject> prefabs, GameObject parent, int amount)
-        {
-            List<GameObject> spawnedPrefabs = new();
-            Vector2 spawnPosition = new(50, 50);
-
-            for (int i = 0; i < amount; i++)
-            {
-                GameObject randomPrefab = prefabs[Random.Range(0, prefabs.Count)];
-                GameObject tempPrefab = Instantiate(randomPrefab, spawnPosition, Quaternion.identity, parent.transform);
-                spawnedPrefabs.Add(tempPrefab);
-                tempPrefab.SetActive(false);
-
-                await Task.Yield();
-            }
-
-            return spawnedPrefabs;
         }
     }
 }

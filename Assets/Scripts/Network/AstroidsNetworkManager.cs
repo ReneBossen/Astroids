@@ -98,7 +98,6 @@ namespace Assets.Scripts.Network
         [Server]
         public void SpawnWaitingPlayers()
         {
-            Debug.Log($"[NM] Spawning all waiting players: {GameManager.Instance.GameIsRunning}");
             if (GameManager.Instance.GameIsRunning)
                 return;
 

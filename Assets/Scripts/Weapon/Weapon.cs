@@ -46,17 +46,19 @@ namespace Assets.Scripts.Weapon
         private void CmdShoot()
         {
             GameObject bullet = _bulletQueue.Dequeue();
-            Vector3 spawnPosition = _bulletSpawnPoint.transform.position;
 
+            Vector3 spawnPosition = _bulletSpawnPoint.transform.position;
             bullet.transform.position = spawnPosition;
             bullet.transform.rotation = transform.rotation;
+
             RepositionBulletRpc(bullet, spawnPosition, transform.rotation);
 
-            bullet.TryGetComponent(out Bullet bulletScript);
-
-            bulletScript.IsActive = true;
+            if (bullet.TryGetComponent(out Bullet bulletScript))
+                bulletScript.IsActive = true;
 
             _bulletQueue.Enqueue(bullet);
+
+            Debug.Log($"[WPNCMD] BulletQueue Count: {_bulletQueue.Count}");
         }
 
         [ClientRpc]

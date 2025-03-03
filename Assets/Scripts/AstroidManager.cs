@@ -21,8 +21,8 @@ namespace Assets.Scripts
             public int score;
         }
 
-        [SerializeField] private List<GameObject> _astroidPrefabs;
-        [SerializeField] private GameObject _explosionPrefab;
+        //[SerializeField] private List<GameObject> _astroidPrefabs;
+        //[SerializeField] private GameObject _explosionPrefab;
 
         [SyncVar]
         private readonly List<GameObject> _instantiatedAstroids = new();
@@ -55,7 +55,6 @@ namespace Assets.Scripts
             _astroidPool = new GameObject("AstroidPool");
             if (isServer)
             {
-
                 InstantiateExplosionEffects(10);
 
                 _ = InstantiateAstroids(30);
@@ -80,8 +79,8 @@ namespace Assets.Scripts
         [Server]
         private async Task InstantiateAstroids(int amount)
         {
-            _instantiatedAstroids.AddRange(
-                await ObjectPoolHandler.Instance.InstantiateRandomObjectPoolByList(_astroidPrefabs, _astroidPool, amount));
+            //_instantiatedAstroids.AddRange(
+            //    await ObjectPoolHandler.Instance.InstantiateRandomObjectPoolByList(_astroidPrefabs, _astroidPool, amount));
         }
 
         [Server]
@@ -165,7 +164,7 @@ namespace Assets.Scripts
             if (explosion == null)
                 return;
 
-            GameObjectHandler.Instance.RepositionGameObject(explosion, astroid.transform.position);
+            //GameObjectHandler.Instance.RepositionGameObject(explosion, astroid.transform.position);
 
             explosion.SetActive(true);
             explosion.GetComponent<ParticleSystem>().Play();

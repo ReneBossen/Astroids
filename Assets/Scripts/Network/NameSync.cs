@@ -1,13 +1,15 @@
 using Mirror;
-using UnityEngine;
 
-public class NameSync : NetworkBehaviour
+namespace Assets.Scripts.Network
 {
-    [SyncVar(hook = nameof(OnNameChanged))]
-    public string objectName;
-
-    void OnNameChanged(string oldName, string newName)
+    public class NameSync : NetworkBehaviour
     {
-        gameObject.name = newName;
+        [SyncVar(hook = nameof(OnNameChanged))]
+        public string objectName;
+
+        void OnNameChanged(string oldName, string newName)
+        {
+            gameObject.name = newName;
+        }
     }
 }

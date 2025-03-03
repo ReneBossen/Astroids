@@ -1094,17 +1094,6 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  _astroidPrefabs:
-  - {fileID: 6004509946591103857, guid: e0838d9a4dbf3284bac15e26cf5a47b9, type: 3}
-  - {fileID: 8127278689527920222, guid: 71e113f914dfd7548b4248bd7eeb0a5e, type: 3}
-  - {fileID: 8366670520679214026, guid: e3ba188dfc5c1524483e71041fda2679, type: 3}
-  - {fileID: 40427848276814022, guid: ecef63bf0d215a74d9f35ff1671f511f, type: 3}
-  - {fileID: 4550301555199097098, guid: e4653a19d6a571e459d06a75b8b1c6dd, type: 3}
-  - {fileID: 6116067141655833507, guid: 1b54b4ddf4c91b6408f2892f02015081, type: 3}
-  - {fileID: 5362692286556044953, guid: e07faf16d0f6a79409fef547ebd3eda2, type: 3}
-  - {fileID: 4819329562445237144, guid: 75e78f7788f44d04ba632b384e237647, type: 3}
-  - {fileID: 2197705870855362780, guid: 2cdb9fd6b2db11d4aaf8306654ee24d4, type: 3}
-  _explosionPrefab: {fileID: 7166671978936448771, guid: eefb599b5bdd8554bb880ecc2b30f466, type: 3}
 --- !u!114 &650290082
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2088,7 +2077,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1005369883}
   - component: {fileID: 1005369882}
-  - component: {fileID: 1005369885}
   - component: {fileID: 1005369884}
   m_Layer: 0
   m_Name: ObjectPoolHandler
@@ -2112,8 +2100,19 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  _emptyParent: {fileID: 460791794585125411, guid: fb08657572e943b48bc6d69c863bf1d5, type: 3}
   _bulletPrefab: {fileID: 459994128919670303, guid: e187bf1432e118c4ebd48b5e7d4b9c60, type: 3}
-  _bulletPool: {fileID: 460791794585125411, guid: fb08657572e943b48bc6d69c863bf1d5, type: 3}
+  _astroidPrefabs:
+  - {fileID: 6004509946591103857, guid: e0838d9a4dbf3284bac15e26cf5a47b9, type: 3}
+  - {fileID: 8127278689527920222, guid: 71e113f914dfd7548b4248bd7eeb0a5e, type: 3}
+  - {fileID: 8366670520679214026, guid: e3ba188dfc5c1524483e71041fda2679, type: 3}
+  - {fileID: 40427848276814022, guid: ecef63bf0d215a74d9f35ff1671f511f, type: 3}
+  - {fileID: 4550301555199097098, guid: e4653a19d6a571e459d06a75b8b1c6dd, type: 3}
+  - {fileID: 6116067141655833507, guid: 1b54b4ddf4c91b6408f2892f02015081, type: 3}
+  - {fileID: 5362692286556044953, guid: e07faf16d0f6a79409fef547ebd3eda2, type: 3}
+  - {fileID: 4819329562445237144, guid: 75e78f7788f44d04ba632b384e237647, type: 3}
+  - {fileID: 2197705870855362780, guid: 2cdb9fd6b2db11d4aaf8306654ee24d4, type: 3}
+  _explosionPrefab: {fileID: 7166671978936448771, guid: eefb599b5bdd8554bb880ecc2b30f466, type: 3}
 --- !u!4 &1005369883
 Transform:
   m_ObjectHideFlags: 0
@@ -2146,21 +2145,6 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
---- !u!114 &1005369885
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1005369881}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: be2b759c99e8f7c438f06c5f2ee51849, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
 --- !u!1 &1063078190
 GameObject:
   m_ObjectHideFlags: 0

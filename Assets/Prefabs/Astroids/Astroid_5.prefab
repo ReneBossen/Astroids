@@ -101,6 +101,7 @@ GameObject:
   - component: {fileID: 1916305781063911408}
   - component: {fileID: 3341783833929210519}
   - component: {fileID: -6137371266722939448}
+  - component: {fileID: 1251900534529411745}
   m_Layer: 0
   m_Name: Astroid_5
   m_TagString: Untagged
@@ -173,6 +174,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36382959ce39fd74eba124b47bacb1ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   _speed: 0.9
   _scoreValue: 23
 --- !u!114 &1916305781063911408
@@ -237,3 +241,19 @@ MonoBehaviour:
   positionSensitivity: 0.01
   rotationSensitivity: 0.01
   scaleSensitivity: 0.01
+--- !u!114 &1251900534529411745
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4550301555199097098}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb8fc42eb0731274c8c0f26248ac5704, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  IsActive: 0

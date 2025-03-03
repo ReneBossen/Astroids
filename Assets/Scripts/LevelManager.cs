@@ -1,81 +1,82 @@
-using Assets.Scripts;
-using Assets.Scripts.UI;
 using System;
 using UnityEngine;
 
-public class LevelManager : MonoBehaviour
+namespace Assets.Scripts
 {
-    public static LevelManager Instance { get; private set; }
-
-    public int CurrentLevel { get; private set; } = 0;
-
-    private int _astroidsToSpawn;
-    private int _astroidsRemaining;
-
-    public event EventHandler<OnLevelStartedEventArgs> OnLevelStarted;
-    public class OnLevelStartedEventArgs : EventArgs
+    public class LevelManager : MonoBehaviour
     {
-        public int Level;
-        public int AstroidsRemaining;
-    }
+        public static LevelManager Instance { get; private set; }
 
-    private void Awake()
-    {
-        if (Instance != null)
+        public int CurrentLevel { get; private set; } = 0;
+
+        private int _astroidsToSpawn;
+        private int _astroidsRemaining;
+
+        public event EventHandler<OnLevelStartedEventArgs> OnLevelStarted;
+        public class OnLevelStartedEventArgs : EventArgs
         {
-            Destroy(gameObject);
+            public int Level;
+            public int AstroidsRemaining;
         }
-        Instance = this;
 
-        _astroidsToSpawn = 2;
-    }
-
-    private void Start()
-    {
-        GameManager.Instance.OnStartGame += GameManager_OnStartGame;
-        GameManager.Instance.OnRestartGame += GameManager_OnRestartGame;
-    }
-
-    private void GameManager_OnStartGame(object sender, EventArgs e)
-    {
-        StartGame();
-    }
-
-    private void GameManager_OnRestartGame(object sender, EventArgs e)
-    {
-        StartGame();
-    }
-
-    private void StartGame()
-    {
-        CurrentLevel = 1;
-        StartLevel();
-    }
-
-    private void StartLevel()
-    {
-        _astroidsRemaining = _astroidsToSpawn * CurrentLevel;
-        OnLevelStarted?.Invoke(this, new OnLevelStartedEventArgs
+        private void Awake()
         {
-            Level = CurrentLevel,
-            AstroidsRemaining = _astroidsRemaining
-        });
-    }
+            if (Instance != null)
+            {
+                Destroy(gameObject);
+            }
+            Instance = this;
 
-
-    public void AsteroidDestroyed()
-    {
-        _astroidsRemaining--;
-
-        if (_astroidsRemaining <= 0)
-        {
-            NextLevel();
+            _astroidsToSpawn = 2;
         }
-    }
 
-    private void NextLevel()
-    {
-        CurrentLevel++;
-        StartLevel();
+        private void Start()
+        {
+            GameManager.Instance.OnStartGame += GameManager_OnStartGame;
+            GameManager.Instance.OnRestartGame += GameManager_OnRestartGame;
+        }
+
+        private void GameManager_OnStartGame(object sender, EventArgs e)
+        {
+            StartGame();
+        }
+
+        private void GameManager_OnRestartGame(object sender, EventArgs e)
+        {
+            StartGame();
+        }
+
+        private void StartGame()
+        {
+            CurrentLevel = 1;
+            StartLevel();
+        }
+
+        private void StartLevel()
+        {
+            _astroidsRemaining = _astroidsToSpawn * CurrentLevel;
+            OnLevelStarted?.Invoke(this, new OnLevelStartedEventArgs
+            {
+                Level = CurrentLevel,
+                AstroidsRemaining = _astroidsRemaining
+            });
+        }
+
+
+        public void AsteroidDestroyed()
+        {
+            _astroidsRemaining--;
+
+            if (_astroidsRemaining <= 0)
+            {
+                NextLevel();
+            }
+        }
+
+        private void NextLevel()
+        {
+            CurrentLevel++;
+            StartLevel();
+        }
     }
 }
