@@ -1,13 +1,11 @@
 using Assets.Scripts.UI;
 using Mirror;
-using Mirror.Examples.Common.Controllers.Player;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
-using UnityEditor.U2D.Aseprite;
 using UnityEngine;
 using Utp;
 

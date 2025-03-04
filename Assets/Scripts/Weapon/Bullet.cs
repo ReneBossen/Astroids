@@ -1,7 +1,6 @@
 using Assets.Scripts.Interfaces;
 using Assets.Scripts.Network;
 using Mirror;
-using System;
 using System.Collections;
 using UnityEngine;
 

@@ -1,13 +1,16 @@
 using Assets.Scripts.UI;
+using Mirror;
 using UnityEngine;
 
 namespace Assets.Scripts
 {
-    public class Score : MonoBehaviour
+    public class Score : NetworkBehaviour
     {
         public static Score Instance { get; private set; }
 
-        public int CurrentScore { get; private set; }
+        [SyncVar(hook = nameof(UpdateScoreUI))]
+        private int _currentScore;
+        public int CurrentScore => _currentScore;
 
         private void Awake()
         {
@@ -18,34 +21,39 @@ namespace Assets.Scripts
             Instance = this;
         }
 
-        private void Start()
+        public override void OnStartServer()
         {
-            CurrentScore = 0;
-            ScoreUIManager.Instance.UpdateScoreText(CurrentScore);
-
+            _currentScore = 0;
             AstroidManager.Instance.OnAstroidDestroyed += AstroidManager_OnAstroidDestroyed;
             GameManager.Instance.OnRestartGame += GameManager_OnRestartGame;
         }
 
+        [Server]
         private void GameManager_OnRestartGame(object sender, System.EventArgs e)
         {
             ResetScore();
         }
 
+        [Server]
         private void AstroidManager_OnAstroidDestroyed(object sender, AstroidManager.OnAstroidDestroyedEventArgs e)
         {
             AddScore(e.score);
         }
 
+        [Server]
         private void AddScore(int amount)
         {
-            CurrentScore += amount;
-            ScoreUIManager.Instance.UpdateScoreText(CurrentScore);
+            _currentScore += amount;
         }
 
+        [Server]
         private void ResetScore()
         {
-            CurrentScore = 0;
+            _currentScore = 0;
+        }
+
+        private void UpdateScoreUI(int oldScore, int newScore)
+        {
             ScoreUIManager.Instance.UpdateScoreText(CurrentScore);
         }
     }

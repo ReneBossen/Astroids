@@ -1,12 +1,9 @@
 using Assets.Scripts.Network;
-using Assets.Scripts.Weapon;
 using Mirror;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 using Random = UnityEngine.Random;
-using Task = System.Threading.Tasks.Task;
 
 namespace Assets.Scripts.Helpers
 {

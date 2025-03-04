@@ -1,10 +1,8 @@
 using Assets.Scripts.Interfaces;
 using Assets.Scripts.Network;
-using Assets.Scripts.Weapon;
 using Mirror;
 using System;
 using UnityEngine;
-using UnityEngine.Assertions.Must;
 using Random = UnityEngine.Random;
 
 namespace Assets.Scripts
@@ -74,11 +72,6 @@ namespace Assets.Scripts
                 Astroid = gameObject,
                 Value = _scoreValue
             });
-        }
-
-        private void OnActiveChanged(bool oldValue, bool newValue)
-        {
-            gameObject.SetActive(newValue);
         }
     }
 }
