@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    public class LevelManager : MonoBehaviour
+    public class LevelManager : NetworkBehaviour
     {
         public static LevelManager Instance { get; private set; }
 
@@ -27,32 +27,36 @@ namespace Assets.Scripts
                 Destroy(gameObject);
             }
             Instance = this;
+        }
+
+        public override void OnStartServer()
+        {
+            GameManager.Instance.OnStartGame += GameManager_OnStartGame;
+            GameManager.Instance.OnRestartGame += GameManager_OnRestartGame;
 
             _astroidsToSpawn = 2;
         }
 
-        private void Start()
-        {
-            GameManager.Instance.OnStartGame += GameManager_OnStartGame;
-            GameManager.Instance.OnRestartGame += GameManager_OnRestartGame;
-        }
-
+        [Server]
         private void GameManager_OnStartGame(object sender, EventArgs e)
         {
             StartGame();
         }
 
+        [Server]
         private void GameManager_OnRestartGame(object sender, EventArgs e)
         {
             StartGame();
         }
 
+        [Server]
         private void StartGame()
         {
             CurrentLevel = 1;
             StartLevel();
         }
 
+        [Server]
         private void StartLevel()
         {
             Debug.Log($"[LVLMNG] StartLevel called");
@@ -75,6 +79,7 @@ namespace Assets.Scripts
             }
         }
 
+        [Server]
         private void NextLevel()
         {
             CurrentLevel++;

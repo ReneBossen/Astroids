@@ -2,6 +2,7 @@ using Assets.Scripts.Helpers;
 using Assets.Scripts.Network;
 using Mirror;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -23,8 +24,10 @@ namespace Assets.Scripts
         private Camera _camera;
         private Vector2 _screenBounds;
         private Queue<GameObject> _astroidQueue;
-        //private Queue<GameObject> _explosionPrefabs = new();
-        private List<GameObject> _spawnedAstroids = new();
+        private Queue<GameObject> _explosionQueue = new();
+        private const float _explosionDelayTime = 1f;
+
+        private readonly List<GameObject> _spawnedAstroids = new();
 
         private bool _astroidQueueReady = false;
         private LevelManager.OnLevelStartedEventArgs _pendingLevelStartedArgs;
@@ -47,8 +50,16 @@ namespace Assets.Scripts
             LevelManager.Instance.OnLevelStarted += LevelManager_OnLevelStarted;
             GameManager.Instance.OnGameOver += GameManager_OnGameOver;
             ObjectPoolHandler.Instance.OnAstroidQueueCreated += ObjectPoolHandler_OnAstroidQueueCreated;
+            ObjectPoolHandler.Instance.OnExplosionQueueCreated += ObjectPoolHandler_OnExplosionQueueCreated;
         }
 
+        [Server]
+        private void ObjectPoolHandler_OnExplosionQueueCreated(object sender, EventArgs e)
+        {
+            _explosionQueue = ObjectPoolHandler.Instance.ExplosionQueue;
+        }
+
+        [Server]
         private void ObjectPoolHandler_OnAstroidQueueCreated(object sender, EventArgs e)
         {
             _astroidQueue = ObjectPoolHandler.Instance.AstroidQueue;
@@ -61,6 +72,7 @@ namespace Assets.Scripts
             }
         }
 
+        [Server]
         private void LevelManager_OnLevelStarted(object sender, LevelManager.OnLevelStartedEventArgs args)
         {
             if (!_astroidQueueReady)
@@ -105,6 +117,7 @@ namespace Assets.Scripts
             astroid.transform.position = position;
         }
 
+        [Server]
         private void GameManager_OnGameOver(object sender, EventArgs e)
         {
             DestroyAllRemainingAstroids();
@@ -127,7 +140,7 @@ namespace Assets.Scripts
         [Server]
         private void AstroidHit(GameObject astroid, int score)
         {
-            //SpawnExplosion(astroid.Astroid);
+            SpawnExplosion(astroid);
 
             LevelManager.Instance.AsteroidDestroyed();
 
@@ -157,20 +170,38 @@ namespace Assets.Scripts
             });
         }
 
-        //private void SpawnExplosion(GameObject astroid)
-        //{
-        //    GameObject explosion = _explosionPrefabs.FirstOrDefault(explosion => !explosion.activeInHierarchy);
+        [Server]
+        private void SpawnExplosion(GameObject astroid)
+        {
+            GameObject explosion = _explosionQueue.Dequeue();
 
-        //    if (explosion == null)
-        //        return;
+            if (explosion == null)
+                return;
 
-        //    //GameObjectHandler.Instance.RepositionGameObject(explosion, astroid.transform.position);
+            RepositionExplosion(explosion, astroid.transform.position);
 
-        //    explosion.SetActive(true);
-        //    explosion.GetComponent<ParticleSystem>().Play();
+            explosion.GetComponent<VariableSync>().IsActive = true;
 
-        //    gameObject.SetActive(false); //Should be deactivated after 1 sec
-        //}
+            StartCoroutine(DisableAfterDelay(explosion, _explosionDelayTime));
+
+            _explosionQueue.Enqueue(explosion);
+        }
+
+        [ClientRpc]
+        private void RepositionExplosion(GameObject explosion, Vector3 position)
+        {
+            explosion.transform.position = position;
+        }
+
+        [Server]
+        private IEnumerator DisableAfterDelay(GameObject obj, float time)
+        {
+            yield return new WaitForSeconds(time);
+            if (obj.TryGetComponent(out VariableSync sync))
+            {
+                sync.IsActive = false;
+            }
+        }
 
         private Vector3 GetRandomSpawnPosition()
         {

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4002781039318440069}
   - component: {fileID: -958010831771232681}
   - component: {fileID: 1238886166977490492}
+  - component: {fileID: -4052085170397381784}
   m_Layer: 0
   m_Name: Astroid_Explosion
   m_TagString: Untagged
@@ -4868,3 +4869,15 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   IsActive: 0
+--- !u!114 &-4052085170397381784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7166671978936448771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e35978fb363663047b6398951e0d3737, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

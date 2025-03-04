@@ -2,6 +2,7 @@ using Assets.Scripts.Network;
 using Mirror;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -12,6 +13,7 @@ namespace Assets.Scripts.Helpers
         public static ObjectPoolHandler Instance { get; private set; }
 
         public event EventHandler OnAstroidQueueCreated;
+        public event EventHandler OnExplosionQueueCreated;
 
         [SerializeField] private GameObject _emptyParent;
 
@@ -26,6 +28,7 @@ namespace Assets.Scripts.Helpers
 
         public Queue<GameObject> BulletQueue { get; } = new();
         public Queue<GameObject> AstroidQueue { get; } = new();
+        public Queue<GameObject> ExplosionQueue { get; } = new();
 
         private void Awake()
         {
@@ -42,14 +45,15 @@ namespace Assets.Scripts.Helpers
         }
 
         [Server]
-        private void GameManager_OnStartGame(object sender, EventArgs e)
+        private async void GameManager_OnStartGame(object sender, EventArgs e)
         {
-            CreateBulletQueue(60);
-            CreateAstroidQueue(60);
+            await CreateBulletQueue(60);
+            await CreateAstroidQueue(60);
+            await CreateExplosionQueue(15);
         }
 
         [Server]
-        private void CreateBulletQueue(int amount)
+        private async Task CreateBulletQueue(int amount)
         {
             GameObject bulletPool = Instantiate(_emptyParent, Vector3.zero, Quaternion.identity);
             bulletPool.TryGetComponent(out NameSync bulletNameSync);
@@ -61,10 +65,12 @@ namespace Assets.Scripts.Helpers
             {
                 InstantiateObjects(_bulletPrefab, BulletQueue, bulletPool);
             }
+
+            await Task.Yield();
         }
 
         [Server]
-        private void CreateAstroidQueue(int amount)
+        private async Task CreateAstroidQueue(int amount)
         {
             GameObject astroidPool = Instantiate(_emptyParent, Vector3.zero, Quaternion.identity);
             astroidPool.TryGetComponent(out NameSync astroidNameSync);
@@ -79,6 +85,27 @@ namespace Assets.Scripts.Helpers
             }
 
             OnAstroidQueueCreated?.Invoke(this, EventArgs.Empty);
+
+            await Task.Yield();
+        }
+
+        [Server]
+        private async Task CreateExplosionQueue(int amount)
+        {
+            GameObject explosionPool = Instantiate(_emptyParent, Vector3.zero, Quaternion.identity);
+            explosionPool.TryGetComponent(out NameSync explosionNameSync);
+            explosionNameSync.objectName = "ExplosionPool";
+
+            NetworkServer.Spawn(explosionPool);
+
+            for (int i = 0; i < amount; i++)
+            {
+                InstantiateObjects(_explosionPrefab, ExplosionQueue, explosionPool);
+            }
+
+            OnExplosionQueueCreated?.Invoke(this, EventArgs.Empty);
+
+            await Task.Yield();
         }
 
         [Server]
