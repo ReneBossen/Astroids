@@ -6,12 +6,10 @@ namespace Assets.Scripts.Player
 {
     public class Player : NetworkBehaviour
     {
-        private Weapon.Weapon _weapon;
         private PlayerMovement _playerMovement;
 
         private void Start()
         {
-            _weapon = GetComponent<Weapon.Weapon>();
             _playerMovement = GetComponent<PlayerMovement>();
 
             GameManager.Instance.OnStartGame += GameManager_OnStartGame;

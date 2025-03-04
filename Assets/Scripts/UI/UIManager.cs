@@ -24,7 +24,7 @@ namespace Assets.Scripts.UI
 
             GameManager.Instance.OnStartGame += GameManager_OnStartGame;
             GameManager.Instance.OnRestartGame += GameManager_OnRestartGame;
-            GameManager.Instance.OnGameOver += GameManager_OnGameOver;
+            GameManager.Instance.OnShowGameOverUI += GameManager_OnShowGameOverUI;
         }
 
         private void GameManager_OnStartGame(object sender, EventArgs e)
@@ -39,7 +39,7 @@ namespace Assets.Scripts.UI
             HideGameOverUI();
         }
 
-        private void GameManager_OnGameOver(object sender, EventArgs e)
+        private void GameManager_OnShowGameOverUI(object sender, EventArgs e)
         {
             HideGameUI();
             ShowGameOverUI();

@@ -1,5 +1,6 @@
 using Assets.Scripts.UI;
 using Mirror;
+using System;
 using UnityEngine;
 
 namespace Assets.Scripts
@@ -7,6 +8,8 @@ namespace Assets.Scripts
     public class Score : NetworkBehaviour
     {
         public static Score Instance { get; private set; }
+
+        public event Action<int> OnScoreUpdated;
 
         [SyncVar(hook = nameof(UpdateScoreUI))]
         private int _currentScore;
@@ -54,7 +57,7 @@ namespace Assets.Scripts
 
         private void UpdateScoreUI(int oldScore, int newScore)
         {
-            ScoreUIManager.Instance.UpdateScoreText(CurrentScore);
+            OnScoreUpdated?.Invoke(CurrentScore);
         }
     }
 }

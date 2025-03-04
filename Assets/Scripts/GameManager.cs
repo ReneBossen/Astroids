@@ -2,6 +2,7 @@ using Assets.Scripts.Network;
 using Assets.Scripts.UI;
 using Mirror;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ namespace Assets.Scripts
         public event EventHandler OnStartGame;
         public event EventHandler OnRestartGame;
         public event EventHandler OnGameOver;
+        public event EventHandler OnShowGameOverUI;
 
         [SyncVar]
         public bool GameIsRunning = false;
@@ -35,16 +37,12 @@ namespace Assets.Scripts
             Instance = this;
         }
 
-        private void Start()
-        {
-            GameOverUIManager.Instance.OnRestartGame += GameOverUIManager_OnRestartGame;
-            Health.Instance.OnPlayerDeath += Health_OnPlayerDeath;
-        }
-
         public override void OnStartServer()
         {
-            base.OnStartServer();
             _networkManager = FindAnyObjectByType<AstroidsNetworkManager>();
+
+            Health.Instance.OnPlayerDeath += Health_OnPlayerDeath;
+            GameOverUIManager.Instance.OnRestartGame += GameOverUIManager_OnRestartGame;
         }
 
         private void GameOverUIManager_OnRestartGame(object sender, EventArgs e)
@@ -82,8 +80,22 @@ namespace Assets.Scripts
 
         private void GameOver()
         {
-            OnGameOver?.Invoke(this, EventArgs.Empty);
+            OnGameOverRpc();
             GameIsRunning = false;
+        }
+
+        [ClientRpc]
+        private void OnGameOverRpc()
+        {
+            OnGameOver?.Invoke(this, EventArgs.Empty);
+            StartCoroutine(OnShowGameOverUIRpc());
+        }
+
+        [Client]
+        private IEnumerator OnShowGameOverUIRpc()
+        {
+            yield return new WaitForSeconds(1);
+            OnShowGameOverUI?.Invoke(this, EventArgs.Empty);
         }
     }
 }

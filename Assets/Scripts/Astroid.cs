@@ -58,6 +58,7 @@ namespace Assets.Scripts
         [ServerCallback]
         private void OnCollisionEnter2D(Collision2D collider)
         {
+            Debug.Log($"[ASTROID] Collided with {collider.gameObject.name}");
             if (collider.gameObject.GetComponent<Player.Player>() != null)
             {
                 OnPlayerHit?.Invoke(this, new OnAstroidHitEventArgs

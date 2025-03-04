@@ -25,6 +25,7 @@ namespace Assets.Scripts.UI
             Instance = this;
 
         }
+
         private void Start()
         {
             _restartBtn.onClick.AddListener(() =>
@@ -32,15 +33,13 @@ namespace Assets.Scripts.UI
                 OnRestartGame?.Invoke(this, EventArgs.Empty);
             });
 
-            GameManager.Instance.OnGameOver += GameManager_OnGameOver;
-        }
-        private void GameManager_OnGameOver(object sender, EventArgs e)
-        {
-            SetGameOverScore();
+            GameManager.Instance.OnShowGameOverUI += GameManager_OnShowGameOverUI;
         }
 
-        private void SetGameOverScore()
+        private void GameManager_OnShowGameOverUI(object sender, EventArgs e)
         {
+            Debug.Log($"[GO_MNG] Final Score processed");
+
             LocalSave.TrySaveHighscore(Score.Instance.CurrentScore);
 
             _score.text = $"Score: {Score.Instance.CurrentScore}";

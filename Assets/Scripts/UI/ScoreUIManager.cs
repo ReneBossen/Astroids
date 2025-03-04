@@ -18,7 +18,12 @@ namespace Assets.Scripts.UI
             Instance = this;
         }
 
-        public void UpdateScoreText(int score)
+        private void Start()
+        {
+            Score.Instance.OnScoreUpdated += Score_OnScoreUpdated;
+        }
+
+        private void Score_OnScoreUpdated(int score)
         {
             _scoreText.text = $"Score: {score}";
         }

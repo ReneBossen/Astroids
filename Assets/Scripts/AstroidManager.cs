@@ -47,8 +47,8 @@ namespace Assets.Scripts
 
         public override void OnStartServer()
         {
-            LevelManager.Instance.OnLevelStarted += LevelManager_OnLevelStarted;
             GameManager.Instance.OnGameOver += GameManager_OnGameOver;
+            LevelManager.Instance.OnLevelStarted += LevelManager_OnLevelStarted;
             ObjectPoolHandler.Instance.OnAstroidQueueCreated += ObjectPoolHandler_OnAstroidQueueCreated;
             ObjectPoolHandler.Instance.OnExplosionQueueCreated += ObjectPoolHandler_OnExplosionQueueCreated;
         }
