@@ -47,7 +47,8 @@ namespace Assets.Scripts
 
         private void GameOverUIManager_OnRestartGame(object sender, EventArgs e)
         {
-            RestartGame();
+            GameIsRunning = true;
+            RestartGameRpc();
         }
 
         private void Health_OnPlayerDeath(object sender, EventArgs e)
@@ -72,10 +73,10 @@ namespace Assets.Scripts
             OnStartGame?.Invoke(this, EventArgs.Empty);
         }
 
-        private void RestartGame()
+        [ClientRpc]
+        private void RestartGameRpc()
         {
             OnRestartGame?.Invoke(this, EventArgs.Empty);
-            GameIsRunning = true;
         }
 
         private void GameOver()

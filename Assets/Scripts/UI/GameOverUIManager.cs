@@ -1,4 +1,6 @@
 using Assets.Scripts.Database;
+using Assets.Scripts.Network;
+using Mirror;
 using System;
 using TMPro;
 using UnityEngine;
@@ -38,6 +40,11 @@ namespace Assets.Scripts.UI
 
         private void GameManager_OnShowGameOverUI(object sender, EventArgs e)
         {
+            if (!NetworkServer.active)
+            {
+                _restartBtn.gameObject.SetActive(false);
+            }
+
             Debug.Log($"[GO_MNG] Final Score processed");
 
             LocalSave.TrySaveHighscore(Score.Instance.CurrentScore);
