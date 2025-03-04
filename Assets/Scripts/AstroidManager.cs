@@ -82,7 +82,6 @@ namespace Assets.Scripts
                 return;
             }
 
-            Debug.Log($"[ASTMNG] AstroidQueue Count: {_astroidQueue.Count}");
             int astroidsToSpawn = args.AstroidsRemaining;
 
             SpawnAstroids(astroidsToSpawn);
@@ -108,6 +107,8 @@ namespace Assets.Scripts
 
                 astroid.GetComponent<Astroid>().OnAstroidHit += Astroid_HandleAstroidHit;
                 astroid.GetComponent<Astroid>().OnPlayerHit += Astroid_HandleAstroidHitPlayer;
+
+                _astroidQueue.Enqueue(astroid);
             }
         }
 

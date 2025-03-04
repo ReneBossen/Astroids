@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,8 +23,15 @@ namespace Assets.Scripts.UI
 
         private void Start()
         {
+            StartCoroutine(WaitForHealth());
+        }
+
+        private IEnumerator WaitForHealth()
+        {
+            yield return new WaitUntil(() => Health.Instance != null);
             Health.Instance.OnPlayerTakeDamage += Health_OnPlayerTakeDamage;
             Health.Instance.OnRetartGame += Health_OnRetartGame;
+            Debug.Log($"[HEALTH] subscribed to Health Instance");
         }
 
         private void Health_OnRetartGame(object sender, EventArgs e)

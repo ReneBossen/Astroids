@@ -14,6 +14,7 @@ namespace Assets.Scripts.Helpers
 
         public event EventHandler OnAstroidQueueCreated;
         public event EventHandler OnExplosionQueueCreated;
+        public event EventHandler OnBulletQueueCreated;
 
         [SerializeField] private GameObject _emptyParent;
 
@@ -66,7 +67,15 @@ namespace Assets.Scripts.Helpers
                 InstantiateObjects(_bulletPrefab, BulletQueue, bulletPool);
             }
 
+            BulletQueueNotifyClients();
+
             await Task.Yield();
+        }
+
+        [ClientRpc]
+        private void BulletQueueNotifyClients()
+        {
+            OnBulletQueueCreated?.Invoke(this, EventArgs.Empty);
         }
 
         [Server]

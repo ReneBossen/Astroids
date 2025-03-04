@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 namespace Assets.Scripts.UI
@@ -22,6 +23,12 @@ namespace Assets.Scripts.UI
             HideGameUI();
             HideGameOverUI();
 
+            StartCoroutine(WaitForGameManager());
+        }
+
+        private IEnumerator WaitForGameManager()
+        {
+            yield return new WaitUntil(() => GameManager.Instance != null);
             GameManager.Instance.OnStartGame += GameManager_OnStartGame;
             GameManager.Instance.OnRestartGame += GameManager_OnRestartGame;
             GameManager.Instance.OnShowGameOverUI += GameManager_OnShowGameOverUI;

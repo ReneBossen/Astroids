@@ -49,6 +49,8 @@ namespace Assets.Scripts.UI
             await UnityServices.InitializeAsync();
 
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
+
+            StartCoroutine(WaitForGameManager());
         }
 
         private void GameManager_OnStartGame(object sender, EventArgs e)
@@ -58,8 +60,6 @@ namespace Assets.Scripts.UI
 
         private void OnEnable()
         {
-            StartCoroutine(WaitForGameManager());
-
             _startHostButton.gameObject.SetActive(true);
             _startClientButton.gameObject.SetActive(true);
             _codeText.gameObject.SetActive(false);
@@ -70,11 +70,6 @@ namespace Assets.Scripts.UI
         {
             yield return new WaitUntil(() => GameManager.Instance != null);
             GameManager.Instance.OnStartGame += GameManager_OnStartGame;
-        }
-
-        private void OnDisable()
-        {
-            GameManager.Instance.OnStartGame -= GameManager_OnStartGame;
         }
 
         private async void CreateRelay()

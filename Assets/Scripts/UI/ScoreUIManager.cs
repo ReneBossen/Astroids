@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -20,6 +21,12 @@ namespace Assets.Scripts.UI
 
         private void Start()
         {
+            StartCoroutine(WaitForScore());
+        }
+
+        private IEnumerator WaitForScore()
+        {
+            yield return new WaitUntil(() => Score.Instance != null);
             Score.Instance.OnScoreUpdated += Score_OnScoreUpdated;
         }
 

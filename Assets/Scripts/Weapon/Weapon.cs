@@ -1,5 +1,7 @@
 using Assets.Scripts.Helpers;
 using Mirror;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -19,11 +21,20 @@ namespace Assets.Scripts.Weapon
             _playerInput = new PlayerInput();
         }
 
+        private void Start()
+        {
+            ObjectPoolHandler.Instance.OnBulletQueueCreated += ObjectPoolHandler_OnBulletQueueCreated;
+        }
+
+        private void ObjectPoolHandler_OnBulletQueueCreated(object sender, EventArgs e)
+        {
+            _bulletQueue = ObjectPoolHandler.Instance.BulletQueue;
+        }
+
         private void OnEnable()
         {
             _playerInput.Enable();
             _playerInput.Player.Shoot.performed += OnShoot;
-            _bulletQueue = ObjectPoolHandler.Instance.BulletQueue;
         }
 
         private void OnDisable()
@@ -55,8 +66,6 @@ namespace Assets.Scripts.Weapon
                 bulletScript.IsActive = true;
 
             _bulletQueue.Enqueue(bullet);
-
-            Debug.Log($"[WPNCMD] BulletQueue Count: {_bulletQueue.Count}");
         }
 
         [ClientRpc]
