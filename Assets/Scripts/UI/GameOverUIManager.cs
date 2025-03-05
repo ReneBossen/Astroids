@@ -1,8 +1,6 @@
 using Assets.Scripts.Database;
-using Assets.Scripts.Network;
 using Mirror;
 using System;
-using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

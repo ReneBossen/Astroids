@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Assets.Scripts.Helpers
+namespace Assets.Scripts
 {
     public class ObjectPoolHandler : NetworkBehaviour
     {

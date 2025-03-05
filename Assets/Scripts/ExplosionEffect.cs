@@ -1,5 +1,3 @@
-using Assets.Scripts.Interfaces;
-using Assets.Scripts.Network;
 using UnityEngine;
 
 namespace Assets.Scripts
