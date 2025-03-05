@@ -5,7 +5,7 @@ using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Astroids
 {
     public class Astroid : NetworkBehaviour, ISyncVariables
     {
@@ -56,7 +56,7 @@ namespace Assets.Scripts
         }
 
         [ServerCallback]
-        private void OnCollisionEnter2D(Collision2D collider)
+        private void OnTriggerEnter2D(Collider2D collider)
         {
             if (collider.gameObject.GetComponent<Player.Player>() != null)
             {

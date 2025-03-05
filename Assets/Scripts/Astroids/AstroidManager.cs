@@ -1,3 +1,4 @@
+using Assets.Scripts.GameCriticals;
 using Assets.Scripts.Network;
 using Mirror;
 using System;
@@ -6,7 +7,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Astroids
 {
     public class AstroidManager : NetworkBehaviour
     {

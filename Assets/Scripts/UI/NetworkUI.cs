@@ -1,3 +1,4 @@
+using Assets.Scripts.GameCriticals;
 using Assets.Scripts.Network;
 using System;
 using TMPro;

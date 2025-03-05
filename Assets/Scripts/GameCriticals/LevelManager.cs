@@ -1,7 +1,7 @@
 using Mirror;
 using System;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.GameCriticals
 {
     public class LevelManager : NetworkBehaviour
     {

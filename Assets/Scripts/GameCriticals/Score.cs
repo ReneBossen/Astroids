@@ -1,7 +1,8 @@
+using Assets.Scripts.Astroids;
 using Mirror;
 using System;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.GameCriticals
 {
     public class Score : NetworkBehaviour
     {

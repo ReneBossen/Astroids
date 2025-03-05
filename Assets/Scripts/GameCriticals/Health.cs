@@ -1,9 +1,10 @@
+using Assets.Scripts.Astroids;
 using Assets.Scripts.UI;
 using Mirror;
 using System;
 using UnityEngine;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.GameCriticals
 {
     public class Health : NetworkBehaviour
     {

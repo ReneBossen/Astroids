@@ -1,3 +1,4 @@
+using Assets.Scripts.GameCriticals;
 using System;
 using UnityEngine;
 

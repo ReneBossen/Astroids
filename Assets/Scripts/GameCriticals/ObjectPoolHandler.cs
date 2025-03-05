@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.GameCriticals
 {
     public class ObjectPoolHandler : NetworkBehaviour
     {
@@ -126,10 +126,21 @@ namespace Assets.Scripts
             queue.Enqueue(tempObject);
 
             NetworkServer.Spawn(tempObject);
+            DisableColliderRpc(tempObject);
 
             SetObjectParentRpc(tempObject.transform, parent.transform);
 
+
             sync.IsActive = false;
+        }
+
+        [ClientRpc]
+        private void DisableColliderRpc(GameObject obj)
+        {
+            if (!isServer && obj.TryGetComponent(out Collider2D collider))
+            {
+                collider.enabled = false;
+            }
         }
 
         [ClientRpc]

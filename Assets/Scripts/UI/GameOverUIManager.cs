@@ -1,4 +1,5 @@
 using Assets.Scripts.Database;
+using Assets.Scripts.GameCriticals;
 using Mirror;
 using System;
 using TMPro;
