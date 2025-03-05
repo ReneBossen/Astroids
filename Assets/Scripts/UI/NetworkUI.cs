@@ -49,8 +49,6 @@ namespace Assets.Scripts.UI
             await UnityServices.InitializeAsync();
 
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
-
-            StartCoroutine(WaitForGameManager());
         }
 
         private void GameManager_OnStartGame(object sender, EventArgs e)
@@ -66,10 +64,10 @@ namespace Assets.Scripts.UI
             _joinInput.gameObject.SetActive(true);
         }
 
-        private IEnumerator WaitForGameManager()
+        public void InitializeSubscribers()
         {
-            yield return new WaitUntil(() => GameManager.Instance != null);
             GameManager.Instance.OnStartGame += GameManager_OnStartGame;
+            Debug.Log($"[NETUIMNG] Subscribed");
         }
 
         private async void CreateRelay()

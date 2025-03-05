@@ -19,15 +19,10 @@ namespace Assets.Scripts.UI
             Instance = this;
         }
 
-        private void Start()
+        public void InitializeSubscribers()
         {
-            StartCoroutine(WaitForScore());
-        }
-
-        private IEnumerator WaitForScore()
-        {
-            yield return new WaitUntil(() => Score.Instance != null);
             Score.Instance.OnScoreUpdated += Score_OnScoreUpdated;
+            Debug.Log($"[SCOREUI] Subscribed");
         }
 
         private void Score_OnScoreUpdated(int score)

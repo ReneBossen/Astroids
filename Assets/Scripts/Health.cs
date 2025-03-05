@@ -21,11 +21,15 @@ namespace Assets.Scripts
 
         private void Awake()
         {
-            if (Instance != null)
+            if (Instance == null)
+            {
+                Instance = this;
+                Debug.Log($"[HEALTH] Instance set");
+            }
+            else
             {
                 Destroy(gameObject);
             }
-            Instance = this;
 
             _maxHealth = 3;
             _currentHealth = _maxHealth;

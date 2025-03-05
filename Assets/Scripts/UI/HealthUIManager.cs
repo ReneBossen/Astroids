@@ -21,17 +21,11 @@ namespace Assets.Scripts.UI
             Instance = this;
         }
 
-        private void Start()
+        public void InitializeSubscribers()
         {
-            StartCoroutine(WaitForHealth());
-        }
-
-        private IEnumerator WaitForHealth()
-        {
-            yield return new WaitUntil(() => Health.Instance != null);
             Health.Instance.OnPlayerTakeDamage += Health_OnPlayerTakeDamage;
             Health.Instance.OnRetartGame += Health_OnRetartGame;
-            Debug.Log($"[HEALTH] subscribed to Health Instance");
+            Debug.Log($"[HEALTHUI] subscribed");
         }
 
         private void Health_OnRetartGame(object sender, EventArgs e)

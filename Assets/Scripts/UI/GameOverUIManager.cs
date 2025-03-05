@@ -35,14 +35,12 @@ namespace Assets.Scripts.UI
             {
                 OnRestartGame?.Invoke(this, EventArgs.Empty);
             });
-
-            StartCoroutine(WaitForGameManager());
         }
 
-        private IEnumerator WaitForGameManager()
+        public void InitializeSubscribers()
         {
-            yield return new WaitUntil(() => GameManager.Instance != null);
             GameManager.Instance.OnShowGameOverUI += GameManager_OnShowGameOverUI;
+            Debug.Log($"[GOUIMNG] subscribed");
         }
 
         private void GameManager_OnShowGameOverUI(object sender, EventArgs e)

@@ -45,6 +45,12 @@ namespace Assets.Scripts
             GameOverUIManager.Instance.OnRestartGame += GameOverUIManager_OnRestartGame;
         }
 
+        [ClientRpc]
+        private void InitializeClientUISubscribers()
+        {
+            UIManager.Instance.InitializeUISubscribers();
+        }
+
         private void GameOverUIManager_OnRestartGame(object sender, EventArgs e)
         {
             GameIsRunning = true;
@@ -64,6 +70,7 @@ namespace Assets.Scripts
 
             Debug.Log("[GM] Game Started!");
             _networkManager.SpawnWaitingPlayers();
+            InitializeClientUISubscribers();
             StartGameRpc();
         }
 
@@ -97,6 +104,17 @@ namespace Assets.Scripts
         {
             yield return new WaitForSeconds(1);
             OnShowGameOverUI?.Invoke(this, EventArgs.Empty);
+        }
+
+        public class ApplicationQuitHandler : MonoBehaviour
+        {
+            void OnApplicationQuit()
+            {
+                if (!Application.isEditor)
+                {
+                    System.Diagnostics.Process.GetCurrentProcess().Kill();
+                }
+            }
         }
     }
 }

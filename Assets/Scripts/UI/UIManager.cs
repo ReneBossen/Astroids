@@ -8,6 +8,11 @@ namespace Assets.Scripts.UI
     {
         public static UIManager Instance { get; private set; }
 
+        [SerializeField] private GameOverUIManager _gameOverUIManager;
+        [SerializeField] private HealthUIManager _healthUIManager;
+        [SerializeField] private NetworkUI _networkUI;
+        [SerializeField] private ScoreUIManager _scoreUIManager;
+
         private void Awake()
         {
             if (Instance != null)
@@ -22,16 +27,23 @@ namespace Assets.Scripts.UI
         {
             HideGameUI();
             HideGameOverUI();
-
-            StartCoroutine(WaitForGameManager());
         }
 
-        private IEnumerator WaitForGameManager()
+        public void InitializeUISubscribers()
         {
-            yield return new WaitUntil(() => GameManager.Instance != null);
+            InitializeSubscribers();
+            _gameOverUIManager.InitializeSubscribers();
+            _healthUIManager.InitializeSubscribers();
+            _networkUI.InitializeSubscribers();
+            _scoreUIManager.InitializeSubscribers();
+        }
+
+        private void InitializeSubscribers()
+        {
             GameManager.Instance.OnStartGame += GameManager_OnStartGame;
             GameManager.Instance.OnRestartGame += GameManager_OnRestartGame;
             GameManager.Instance.OnShowGameOverUI += GameManager_OnShowGameOverUI;
+            Debug.Log($"[UIMNG] Subscribed");
         }
 
         private void GameManager_OnStartGame(object sender, EventArgs e)
