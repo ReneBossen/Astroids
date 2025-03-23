@@ -22,7 +22,7 @@ namespace Assets.Scripts.Network
         public readonly List<Player.Player> Players = new();
 
         ///<summary>
-        /// List of players currently connected to the server.
+        /// List of players currently waiting for game start.
         /// </summary>
         public readonly List<NetworkConnectionToClient> WaitingPlayers = new();
 
@@ -88,28 +88,34 @@ namespace Assets.Scripts.Network
         }
 
         [Server]
-        public void SpawnWaitingPlayers()
+        public List<GameObject> SpawnWaitingPlayers()
         {
             if (GameManager.Instance.GameIsRunning)
-                return;
+                return null;
 
             GameManager.Instance.GameIsRunning = true;
+
+            List<GameObject> players = new();
 
             foreach (NetworkConnectionToClient conn in WaitingPlayers)
             {
                 Debug.Log($"[NM] Spawning waiting player: {conn.connectionId}");
-                SpawnPlayer(conn);
+                players.Add(SpawnPlayer(conn));
             }
 
             WaitingPlayers.Clear();
+
+            return players;
         }
 
         [Server]
-        private void SpawnPlayer(NetworkConnectionToClient conn)
+        private GameObject SpawnPlayer(NetworkConnectionToClient conn)
         {
             GameObject player = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
             NetworkServer.AddPlayerForConnection(conn, player);
             Debug.Log($"[NM] Added player for connection {conn.connectionId}");
+
+            return player;
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Assets.Scripts.Player
     {
         private PlayerMovement _playerMovement;
 
-        private void Start()
+        public override void OnStartClient()
         {
             _playerMovement = GetComponent<PlayerMovement>();
 

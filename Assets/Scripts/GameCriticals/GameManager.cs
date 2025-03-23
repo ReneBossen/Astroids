@@ -69,7 +69,7 @@ namespace Assets.Scripts.GameCriticals
                 return;
 
             Debug.Log("[GM] Game Started!");
-            _networkManager.SpawnWaitingPlayers();
+            _players = _networkManager.SpawnWaitingPlayers();
             InitializeClientUISubscribers();
             StartGameRpc();
         }
