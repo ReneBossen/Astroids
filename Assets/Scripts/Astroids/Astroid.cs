@@ -66,12 +66,14 @@ namespace Assets.Scripts.Astroids
                     Value = _scoreValue
                 });
             }
-
-            OnAstroidHit?.Invoke(this, new OnAstroidHitEventArgs
+            else
             {
-                Astroid = gameObject,
-                Value = _scoreValue
-            });
+                OnAstroidHit?.Invoke(this, new OnAstroidHitEventArgs
+                {
+                    Astroid = gameObject,
+                    Value = _scoreValue
+                });
+            }
         }
     }
 }

@@ -10,6 +10,8 @@ namespace Assets.Scripts.Weapon
 {
     public class Weapon : NetworkBehaviour
     {
+        public event EventHandler OnPlayerHitByBullet;
+
         [SerializeField] private Transform _bulletSpawnPoint;
 
         private Queue<GameObject> _bulletQueue;
@@ -53,18 +55,40 @@ namespace Assets.Scripts.Weapon
         [Command]
         private void CmdShoot()
         {
-            GameObject bullet = _bulletQueue.Dequeue();
+            GameObject bulletObject = _bulletQueue.Dequeue();
+            Debug.Log($"[WPNSHOOT] bulletId: {bulletObject.GetComponent<Transform>().GetInstanceID()}");
 
             Vector3 spawnPosition = _bulletSpawnPoint.transform.position;
-            bullet.transform.position = spawnPosition;
-            bullet.transform.rotation = transform.rotation;
+            bulletObject.transform.position = spawnPosition;
+            bulletObject.transform.rotation = transform.rotation;
 
-            RepositionBulletRpc(bullet, spawnPosition, transform.rotation);
+            Bullet bullet = bulletObject.GetComponent<Bullet>();
 
-            if (bullet.TryGetComponent(out Bullet bulletScript))
+            bullet.OnPlayerHit += Bullet_HandlePlayerHit;
+            bullet.OnDisable += Bullet_OnDisable;
+            bullet.ShooterIdentity = gameObject.GetComponent<NetworkIdentity>();
+
+            RepositionBulletRpc(bulletObject, spawnPosition, transform.rotation);
+
+            if (bulletObject.TryGetComponent(out Bullet bulletScript))
                 bulletScript.IsActive = true;
 
-            _bulletQueue.Enqueue(bullet);
+            _bulletQueue.Enqueue(bulletObject);
+        }
+
+        private void Bullet_OnDisable(object sender, Bullet.OnBulletDisableEventArgs bullet)
+        {
+            bullet.Bullet.GetComponent<Bullet>().OnPlayerHit -= Bullet_HandlePlayerHit;
+            bullet.Bullet.GetComponent<Bullet>().OnDisable -= Bullet_OnDisable;
+        }
+
+
+        private void Bullet_HandlePlayerHit(object sender, Bullet.OnBulletDisableEventArgs bullet)
+        {
+            OnPlayerHitByBullet?.Invoke(this, EventArgs.Empty);
+
+            bullet.Bullet.GetComponent<Bullet>().OnPlayerHit -= Bullet_HandlePlayerHit;
+            bullet.Bullet.GetComponent<Bullet>().OnDisable -= Bullet_OnDisable;
         }
 
         [ClientRpc]

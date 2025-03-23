@@ -1,18 +1,23 @@
 using Assets.Scripts.Interfaces;
 using Assets.Scripts.Network;
 using Mirror;
+using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
+using static Assets.Scripts.Astroids.Astroid;
 
 namespace Assets.Scripts.Weapon
 {
     public class Bullet : NetworkBehaviour, ISyncVariables
     {
-        //public event EventHandler<BulletHitEventArgs> OnBulletHit;
-        //public class BulletHitEventArgs : EventArgs
-        //{
-        //    public GameObject Bullet { get; set; }
-        //}
+        public event EventHandler<OnBulletDisableEventArgs> OnPlayerHit;
+        public event EventHandler<OnBulletDisableEventArgs> OnDisable;
+
+        public class OnBulletDisableEventArgs : EventArgs
+        {
+            public GameObject Bullet;
+        }
 
         public bool IsActive
         {
@@ -21,15 +26,13 @@ namespace Assets.Scripts.Weapon
         }
 
         public VariableSync SyncComponent { get; private set; }
+        public NetworkIdentity ShooterIdentity;
 
         [SerializeField] private float _speed;
         [SerializeField] private float _bulletLifeTime;
 
-        private Bullet bulletScript;
-
         private void Awake()
         {
-            bulletScript = GetComponent<Bullet>();
             SyncComponent = GetComponent<VariableSync>();
         }
 
@@ -50,17 +53,38 @@ namespace Assets.Scripts.Weapon
         private IEnumerator DisableSelf()
         {
             yield return new WaitForSeconds(_bulletLifeTime);
-            bulletScript.IsActive = false;
+            OnDisable?.Invoke(this, new OnBulletDisableEventArgs
+            {
+                Bullet = gameObject
+            });
+
+            ShooterIdentity = null;
+            IsActive = false;
         }
 
         [ServerCallback]
-        private void OnCollisionEnter2D()
+        private void OnTriggerEnter2D(Collider2D collider)
         {
+            if (collider.gameObject == ShooterIdentity.gameObject)
+                return;
+
+            if (collider.gameObject.TryGetComponent(out Player.Player _))
+            {
+                OnPlayerHit?.Invoke(this, new OnBulletDisableEventArgs
+                {
+                    Bullet = gameObject
+                });
+            }
+            else
+            {
+                OnDisable?.Invoke(this, new OnBulletDisableEventArgs
+                {
+                    Bullet = gameObject
+                });
+            }
+
+            ShooterIdentity = null;
             IsActive = false;
-            //OnBulletHit?.Invoke(this, new BulletHitEventArgs
-            //{
-            //    Bullet = gameObject
-            //});
         }
     }
 }

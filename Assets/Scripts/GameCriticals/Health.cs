@@ -40,6 +40,15 @@ namespace Assets.Scripts.GameCriticals
         {
             AstroidManager.Instance.OnPlayerHitByAstroid += AstroidManager_OnPlayerHitByAstroid;
             GameOverUIManager.Instance.OnRestartGame += GameOverUIManager_OnRestartGame;
+            GameManager.Instance.OnStartGame += GameManager_OnStartGame;
+        }
+
+        private void GameManager_OnStartGame(object sender, EventArgs e)
+        {
+            GameManager.Instance.Players.ForEach(player =>
+            {
+                player.GetComponent<Weapon.Weapon>().OnPlayerHitByBullet += Player_OnHitByBullet;
+            });
         }
 
         [Server]
@@ -47,6 +56,12 @@ namespace Assets.Scripts.GameCriticals
         {
             RestartGame();
             OnRetartGame?.Invoke(this, EventArgs.Empty);
+        }
+
+        [Server]
+        private void Player_OnHitByBullet(object sender, EventArgs e)
+        {
+            TakeDamage();
         }
 
         [Server]
