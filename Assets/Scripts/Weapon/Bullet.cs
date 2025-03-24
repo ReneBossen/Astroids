@@ -65,7 +65,7 @@ namespace Assets.Scripts.Weapon
         [ServerCallback]
         private void OnTriggerEnter2D(Collider2D collider)
         {
-            if (collider.gameObject == ShooterIdentity.gameObject)
+            if (collider.gameObject == ShooterIdentity.gameObject) //Nullable fejl??
                 return;
 
             if (collider.gameObject.TryGetComponent(out Player.Player _))
