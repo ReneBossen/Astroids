@@ -207,7 +207,8 @@ namespace Mirror
         public virtual void Awake()
         {
             // Don't allow collision-destroyed second instance to continue.
-            if (!InitializeSingleton()) return;
+            if (!InitializeSingleton())
+                return;
 
             // Apply configuration in Awake once already
             ApplyConfiguration();
@@ -1275,7 +1276,8 @@ namespace Mirror
             NetworkClient.Shutdown();
 
             // Exit here if we're now in ServerOnly mode (StopClient called in Host mode).
-            if (mode == NetworkManagerMode.ServerOnly) return;
+            if (mode == NetworkManagerMode.ServerOnly)
+                return;
 
             // Get Network Manager out of DDOL before going to offline scene
             // to avoid collision and let a fresh Network Manager be created.
@@ -1411,7 +1413,8 @@ namespace Mirror
         public virtual void OnClientSceneChanged()
         {
             // always become ready.
-            if (NetworkClient.connection.isAuthenticated && !NetworkClient.ready) NetworkClient.Ready();
+            if (NetworkClient.connection.isAuthenticated && !NetworkClient.ready)
+                NetworkClient.Ready();
 
             // Only call AddPlayer for normal scene changes, not additive load/unload
             if (NetworkClient.connection.isAuthenticated && clientSceneOperation == SceneOperation.Normal && autoCreatePlayer && NetworkClient.localPlayer == null)
@@ -1448,7 +1451,8 @@ namespace Mirror
         // keep OnGUI even in builds. useful to debug snap interp.
         void OnGUI()
         {
-            if (!timeInterpolationGui) return;
+            if (!timeInterpolationGui)
+                return;
             NetworkClient.OnGUI();
         }
 #endif

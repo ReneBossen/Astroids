@@ -10,7 +10,6 @@ namespace Assets.Scripts.UI
 
         [SerializeField] private GameOverUIManager _gameOverUIManager;
         [SerializeField] private HealthUIManager _healthUIManager;
-        [SerializeField] private NetworkUI _networkUI;
         [SerializeField] private ScoreUIManager _scoreUIManager;
 
         private void Awake()
@@ -34,7 +33,6 @@ namespace Assets.Scripts.UI
             InitializeSubscribers();
             _gameOverUIManager.InitializeSubscribers();
             _healthUIManager.InitializeSubscribers();
-            _networkUI.InitializeSubscribers();
             _scoreUIManager.InitializeSubscribers();
         }
 
@@ -43,7 +41,6 @@ namespace Assets.Scripts.UI
             GameManager.Instance.OnStartGame += GameManager_OnStartGame;
             GameManager.Instance.OnRestartGame += GameManager_OnRestartGame;
             GameManager.Instance.OnShowGameOverUI += GameManager_OnShowGameOverUI;
-            Debug.Log($"[UIMNG] Subscribed");
         }
 
         private void GameManager_OnStartGame(object sender, EventArgs e)

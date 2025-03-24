@@ -2,8 +2,6 @@ using Assets.Scripts.GameCriticals;
 using Assets.Scripts.Network;
 using System;
 using TMPro;
-using Unity.Services.Authentication;
-using Unity.Services.Core;
 using Unity.Services.Relay;
 using UnityEngine;
 using UnityEngine.UI;
@@ -41,17 +39,9 @@ namespace Assets.Scripts.UI
             });
         }
 
-        private async void Start()
+        private void Start()
         {
             _networkManager = FindFirstObjectByType<AstroidsNetworkManager>();
-            await UnityServices.InitializeAsync();
-
-            await AuthenticationService.Instance.SignInAnonymouslyAsync();
-        }
-
-        private void GameManager_OnStartGame(object sender, EventArgs e)
-        {
-            Hide();
         }
 
         private void OnEnable()
@@ -65,17 +55,25 @@ namespace Assets.Scripts.UI
         public void InitializeSubscribers()
         {
             GameManager.Instance.OnStartGame += GameManager_OnStartGame;
-            Debug.Log($"[NETUIMNG] Subscribed");
+        }
+
+        private void GameManager_OnStartGame(object sender, EventArgs e)
+        {
+            Hide();
         }
 
         private async void CreateRelay()
         {
+            _networkManager = FindFirstObjectByType<AstroidsNetworkManager>();
             try
             {
+                Debug.Log($"Unity Login");
                 await _networkManager.UnityLogin();
 
+                Debug.Log($"Creating Relay");
                 await _networkManager.StartRelayHost(2);
 
+                Debug.Log($"Displaying Code");
                 DisplayCode();
 
                 OnHostGame?.Invoke(this, EventArgs.Empty);
@@ -98,6 +96,7 @@ namespace Assets.Scripts.UI
 
         private async void JoinRelay(string joinCode)
         {
+            _networkManager = FindFirstObjectByType<AstroidsNetworkManager>();
             try
             {
                 await _networkManager.UnityLogin();

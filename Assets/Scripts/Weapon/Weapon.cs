@@ -56,7 +56,6 @@ namespace Assets.Scripts.Weapon
         private void CmdShoot()
         {
             GameObject bulletObject = _bulletQueue.Dequeue();
-            Debug.Log($"[WPNSHOOT] bulletId: {bulletObject.GetComponent<Transform>().GetInstanceID()}");
 
             Vector3 spawnPosition = _bulletSpawnPoint.transform.position;
             bulletObject.transform.position = spawnPosition;

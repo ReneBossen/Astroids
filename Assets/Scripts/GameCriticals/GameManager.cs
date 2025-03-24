@@ -49,6 +49,7 @@ namespace Assets.Scripts.GameCriticals
         private void InitializeClientUISubscribers()
         {
             UIManager.Instance.InitializeUISubscribers();
+            NetworkUI.Instance.InitializeSubscribers();
         }
 
         private void GameOverUIManager_OnRestartGame(object sender, EventArgs e)

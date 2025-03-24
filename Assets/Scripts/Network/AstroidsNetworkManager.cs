@@ -1,5 +1,6 @@
 using Assets.Scripts.GameCriticals;
 using Assets.Scripts.UI;
+using Assets.UTPTransport.Relay;
 using Mirror;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,7 @@ namespace Assets.Scripts.Network
 
         public override void Start()
         {
+            base.Start();
             StartGameUIManager.Instance.OnStartGame += StartGameUIManager_OnStartGame;
         }
 
@@ -74,13 +76,18 @@ namespace Assets.Scripts.Network
             }
         }
 
+        public override void OnClientDisconnect()
+        {
+            AuthenticationService.Instance.SignOut();
+            ShowMainMenuUi();
+        }
+
         public override void OnServerAddPlayer(NetworkConnectionToClient conn)
         {
             Debug.Log($"[NM] Client joined with: {conn.connectionId}");
             if (!GameManager.Instance.GameIsRunning)
             {
                 WaitingPlayers.Add(conn);
-                Debug.Log($"[NM] Player {conn.connectionId} added to waiting list!");
                 return;
             }
 
@@ -113,9 +120,13 @@ namespace Assets.Scripts.Network
         {
             GameObject player = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
             NetworkServer.AddPlayerForConnection(conn, player);
-            Debug.Log($"[NM] Added player for connection {conn.connectionId}");
 
             return player;
+        }
+
+        private void ShowMainMenuUi()
+        {
+            NetworkUI.Instance.Show();
         }
     }
 }
