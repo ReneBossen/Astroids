@@ -1,6 +1,7 @@
 using Assets.Scripts.Network;
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Assets.Scripts.UI
 {
