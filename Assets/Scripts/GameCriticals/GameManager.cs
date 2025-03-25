@@ -79,6 +79,7 @@ namespace Assets.Scripts.GameCriticals
         private void StartGameRpc()
         {
             OnStartGame?.Invoke(this, EventArgs.Empty);
+            EscMenuUI.Instance.StartGameRpc();
         }
 
         [ClientRpc]

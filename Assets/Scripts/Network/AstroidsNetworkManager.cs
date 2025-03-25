@@ -33,6 +33,21 @@ namespace Assets.Scripts.Network
             Debug.Log($"[ANM] Createdd new instance");
             base.Start();
             StartGameUIManager.Instance.OnStartGame += StartGameUIManager_OnStartGame;
+            EscMenuUI.Instance.OnLeaveGame += EscMenuUI_OnLeaveGame;
+        }
+
+        private void OnDisable()
+        {
+            StartGameUIManager.Instance.OnStartGame -= StartGameUIManager_OnStartGame;
+            EscMenuUI.Instance.OnLeaveGame -= EscMenuUI_OnLeaveGame;
+        }
+
+        private void EscMenuUI_OnLeaveGame(object sender, EventArgs e)
+        {
+            if (NetworkClient.activeHost)
+                StopHost();
+            else
+                StopClient();
         }
 
         [Server]

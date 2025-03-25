@@ -42,18 +42,11 @@ namespace Assets.Scripts.UI
             GameManager.Instance.OnStartGame += GameManager_OnStartGame;
             GameManager.Instance.OnRestartGame += GameManager_OnRestartGame;
             GameManager.Instance.OnShowGameOverUI += GameManager_OnShowGameOverUI;
-            AstroidsNetworkManager.OnDisconnect += AstroidsNetworkManager_OnDisconnect;
-        }
-
-        private void AstroidsNetworkManager_OnDisconnect(object sender, EventArgs e)
-        {
-            ShowStartGameUI();
         }
 
         private void GameManager_OnStartGame(object sender, EventArgs e)
         {
             ShowGameUI();
-            HideStartGameUI();
         }
 
         private void GameManager_OnRestartGame(object sender, EventArgs e)
@@ -66,16 +59,6 @@ namespace Assets.Scripts.UI
         {
             HideGameUI();
             ShowGameOverUI();
-        }
-
-        private void HideStartGameUI()
-        {
-            StartGameUIManager.Instance.Hide();
-        }
-
-        private void ShowStartGameUI()
-        {
-            StartGameUIManager.Instance.Show();
         }
 
         public void ShowGameUI()

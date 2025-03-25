@@ -32,6 +32,8 @@ namespace Assets.Scripts.UI
             _startButton.onClick.AddListener(() =>
             {
                 OnStartGame?.Invoke(this, EventArgs.Empty);
+
+                _startButton.gameObject.SetActive(false);
             });
 
             _startButton.gameObject.SetActive(false);

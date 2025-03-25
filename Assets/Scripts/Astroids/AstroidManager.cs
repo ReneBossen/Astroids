@@ -210,8 +210,11 @@ namespace Assets.Scripts.Astroids
             Vector3 spawnPosition = GenerateRandomPositionOnScreen();
             const float spawnDistanceFromPlayer = 2.5f;
 
-            foreach (GameObject player in players)
+            foreach (GameObject? player in players)
             {
+                if (player == null)
+                    continue;
+
                 while (Vector3.Distance(player.transform.position, spawnPosition) < spawnDistanceFromPlayer)
                 {
                     spawnPosition = GenerateRandomPositionOnScreen();
