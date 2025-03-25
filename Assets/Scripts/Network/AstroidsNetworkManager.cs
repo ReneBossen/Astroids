@@ -16,6 +16,7 @@ namespace Assets.Scripts.Network
     public class AstroidsNetworkManager : RelayNetworkManager
     {
         public bool IsLoggedIn = false;
+        public static event EventHandler OnDisconnect;
 
         /// <summary>
         /// List of players currently connected to the server.
@@ -29,6 +30,7 @@ namespace Assets.Scripts.Network
 
         public override void Start()
         {
+            Debug.Log($"[ANM] Createdd new instance");
             base.Start();
             StartGameUIManager.Instance.OnStartGame += StartGameUIManager_OnStartGame;
         }
@@ -79,7 +81,7 @@ namespace Assets.Scripts.Network
         public override void OnClientDisconnect()
         {
             AuthenticationService.Instance.SignOut();
-            ShowMainMenuUi();
+            OnDisconnect?.Invoke(this, EventArgs.Empty);
         }
 
         public override void OnServerAddPlayer(NetworkConnectionToClient conn)
@@ -122,11 +124,6 @@ namespace Assets.Scripts.Network
             NetworkServer.AddPlayerForConnection(conn, player);
 
             return player;
-        }
-
-        private void ShowMainMenuUi()
-        {
-            NetworkUI.Instance.Show();
         }
     }
 }

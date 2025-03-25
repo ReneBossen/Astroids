@@ -1560,7 +1560,6 @@ MonoBehaviour:
   LoggerLevel: 3
   TimeoutMS: 1000
   useRelay: 1
-  relayManager: {fileID: 8781747675741950864}
 --- !u!224 &6148318944292980146
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1821,7 +1820,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e50aae984c81334db95066b73263ea2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _readyButton: {fileID: 2894653203657235211}
+  _startButton: {fileID: 2894653203657235211}
 --- !u!222 &7598765250610999515
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1920,7 +1919,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33fc96aaf2cce2244899c0ede898955d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _networkUI: {fileID: 1492418545390363814}
 --- !u!114 &8274054401657726838
 MonoBehaviour:
   m_ObjectHideFlags: 0

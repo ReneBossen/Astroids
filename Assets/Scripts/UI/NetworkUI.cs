@@ -46,10 +46,7 @@ namespace Assets.Scripts.UI
 
         private void OnEnable()
         {
-            _startHostButton.gameObject.SetActive(true);
-            _startClientButton.gameObject.SetActive(true);
-            _codeText.gameObject.SetActive(false);
-            _joinInput.gameObject.SetActive(true);
+            InitializeNetworkUI();
         }
 
         public void InitializeSubscribers()
@@ -111,6 +108,17 @@ namespace Assets.Scripts.UI
             {
                 Debug.LogError($"Relay join failed: {ex.Message}");
             }
+        }
+
+        public void InitializeNetworkUI()
+        {
+            Show();
+            _startHostButton.gameObject.SetActive(true);
+            _startClientButton.gameObject.SetActive(true);
+            _codeText.gameObject.SetActive(false);
+            _joinInput.gameObject.SetActive(true);
+
+            _joinInput.text = "";
         }
     }
 }

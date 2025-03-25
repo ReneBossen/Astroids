@@ -10,7 +10,7 @@ namespace Assets.Scripts.UI
 
         public event EventHandler OnStartGame;
 
-        [SerializeField] private Button _readyButton;
+        [SerializeField] private Button _startButton;
 
         private void Awake()
         {
@@ -24,22 +24,22 @@ namespace Assets.Scripts.UI
             }
 
             DontDestroyOnLoad(gameObject);
-
-            _readyButton.gameObject.SetActive(false);
         }
 
         private void Start()
         {
             NetworkUI.Instance.OnHostGame += NetworkUI_OnHostGame;
-            _readyButton.onClick.AddListener(() =>
+            _startButton.onClick.AddListener(() =>
             {
                 OnStartGame?.Invoke(this, EventArgs.Empty);
             });
+
+            _startButton.gameObject.SetActive(false);
         }
 
         private void NetworkUI_OnHostGame(object sender, EventArgs e)
         {
-            _readyButton.gameObject.SetActive(true);
+            _startButton.gameObject.SetActive(true);
         }
     }
 }
