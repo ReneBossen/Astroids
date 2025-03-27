@@ -29,8 +29,6 @@ namespace Assets.Scripts.UI
                 Destroy(gameObject);
             }
 
-            DontDestroyOnLoad(gameObject);
-
             _playerInput = new PlayerInput();
         }
 

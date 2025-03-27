@@ -22,8 +22,6 @@ namespace Assets.Scripts.UI
             {
                 Destroy(gameObject);
             }
-
-            DontDestroyOnLoad(gameObject);
         }
 
         private void Start()

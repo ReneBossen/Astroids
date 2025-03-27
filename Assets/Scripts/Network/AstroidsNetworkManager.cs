@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Unity.Networking.Transport;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using UnityEngine;
@@ -30,7 +31,6 @@ namespace Assets.Scripts.Network
 
         public override void Start()
         {
-            Debug.Log($"[ANM] Createdd new instance");
             base.Start();
             StartGameUIManager.Instance.OnStartGame += StartGameUIManager_OnStartGame;
             EscMenuUI.Instance.OnLeaveGame += EscMenuUI_OnLeaveGame;

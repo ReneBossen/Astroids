@@ -1,6 +1,7 @@
 using Assets.Scripts.GameCriticals;
 using Mirror;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -34,19 +35,30 @@ namespace Assets.Scripts.Weapon
 
         private void OnEnable()
         {
-            _playerInput.Enable();
-            _playerInput.Player.Shoot.performed += OnShoot;
+            StartCoroutine(EnableInput_NetworkClient_IsReady());
         }
 
         private void OnDisable()
         {
+            Debug.Log($"[WEAPON] PlayerInput Disabled");
+
             _playerInput.Player.Shoot.performed -= OnShoot;
             _playerInput.Disable();
         }
 
+        private IEnumerator EnableInput_NetworkClient_IsReady()
+        {
+            yield return new WaitUntil(() => NetworkClient.ready);
+
+            Debug.Log($"[WEAPON] PlayerInput Enabled");
+
+            _playerInput.Enable();
+            _playerInput.Player.Shoot.performed += OnShoot;
+        }
+
         private void OnShoot(InputAction.CallbackContext obj)
         {
-            if (!isLocalPlayer)
+            if (!isLocalPlayer || !NetworkClient.ready)
                 return;
 
             CmdShoot();
@@ -55,6 +67,12 @@ namespace Assets.Scripts.Weapon
         [Command]
         private void CmdShoot()
         {
+            if (_bulletQueue == null || _bulletQueue.Count == 0)
+            {
+                Debug.LogWarning($"[WPN] Bullet queue is empty or not initialized");
+                return;
+            }
+
             GameObject bulletObject = _bulletQueue.Dequeue();
 
             Vector3 spawnPosition = _bulletSpawnPoint.transform.position;

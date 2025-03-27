@@ -1,5 +1,6 @@
 using Assets.Scripts.Interfaces;
 using Assets.Scripts.Network;
+using JetBrains.Annotations;
 using Mirror;
 using System;
 using System.Collections;
@@ -26,7 +27,7 @@ namespace Assets.Scripts.Weapon
         }
 
         public VariableSync SyncComponent { get; private set; }
-        public NetworkIdentity ShooterIdentity;
+        [CanBeNull] public NetworkIdentity ShooterIdentity;
 
         [SerializeField] private float _speed;
         [SerializeField] private float _bulletLifeTime;
@@ -65,7 +66,7 @@ namespace Assets.Scripts.Weapon
         [ServerCallback]
         private void OnTriggerEnter2D(Collider2D collider)
         {
-            if (collider.gameObject == ShooterIdentity.gameObject) //Nullable fejl??
+            if (ShooterIdentity != null && collider.gameObject == ShooterIdentity.gameObject) //Nullable fejl??
                 return;
 
             if (collider.gameObject.TryGetComponent(out Player.Player _))

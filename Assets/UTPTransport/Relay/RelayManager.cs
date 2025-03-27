@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Unity.Networking.Transport;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
@@ -60,7 +61,7 @@ namespace Utp
             {
                 joinAllocation.Exception.Flatten().Handle((Exception err) =>
                 {
-                    UtpLog.Error($"Unable to get Relay allocation from join code, encountered an error: {err.Message}.");
+                    //UtpLog.Error($"Unable to get Relay allocation from join code, encountered an error: {err.Message}.");
 
                     return true;
                 });

@@ -125,18 +125,23 @@ namespace Utp
         /// <summary>
         /// Ensures Relay is enabled. Starts the client, connects to the server with the relayJoinCode.
         /// </summary>
-        public void JoinRelayServer()
+        public async Task JoinRelayServer()
         {
+            TaskCompletionSource<bool> tcs = new();
+
             utpTransport.useRelay = true;
             utpTransport.ConfigureClientWithJoinCode(relayJoinCode,
-            () =>
-            {
-                StartClient();
-            },
-            () =>
-            {
-                UtpLog.Error($"Failed to join Relay server.");
-            });
+                () =>
+                {
+                    StartClient();
+                    tcs.SetResult(true);
+                },
+                () =>
+                {
+                    tcs.SetException(new Exception("Failed to join Relay server."));
+                });
+
+            await tcs.Task;
         }
     }
 }
